@@ -1,5 +1,5 @@
 from django import forms
-from django.contrib.auth.forms import UserCreationForm
+from django.contrib.auth.forms import UserCreationForm, UserChangeForm
 from .models import User, Item
 from django.utils import timezone
 from datetime import timedelta
@@ -29,6 +29,57 @@ class ItemForm(forms.ModelForm):
         widgets = {
             'description': forms.Textarea(attrs={'rows': 4}),
         }
+
+class AdminUserCreationForm(UserCreationForm):
+    is_superuser = forms.BooleanField(required=False, label='Admin')
+    is_seller = forms.BooleanField(required=False, label='Seller')
+    is_buyer = forms.BooleanField(required=False, label='Buyer')
+    is_active = forms.BooleanField(required=False, initial=True, label='Active')
+
+    class Meta:
+        model = User
+        fields = ('username', 'email', 'first_name', 'last_name', 'password1', 'password2')
+
+class AdminUserEditForm(UserChangeForm):
+    is_superuser = forms.BooleanField(required=False, label='Admin')
+    is_seller = forms.BooleanField(required=False, label='Seller')
+    is_buyer = forms.BooleanField(required=False, label='Buyer')
+    is_active = forms.BooleanField(required=False, label='Active')
+    password1 = forms.CharField(
+        label="New Password",
+        widget=forms.PasswordInput,
+        required=False,
+        help_text="Leave blank to keep current password."
+    )
+    password2 = forms.CharField(
+        label="Confirm New Password",
+        widget=forms.PasswordInput,
+        required=False
+    )
+
+    class Meta:
+        model = User
+        fields = ('username', 'email', 'first_name', 'last_name')
+        exclude = ('password',)
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        # Remove the password field that UserChangeForm adds
+        if 'password' in self.fields:
+            self.fields.pop('password')
+
+    def clean(self):
+        cleaned_data = super().clean()
+        password1 = cleaned_data.get('password1')
+        password2 = cleaned_data.get('password2')
+
+        if password1:
+            if not password2:
+                self.add_error('password2', 'You must confirm your password')
+            elif password1 != password2:
+                self.add_error('password2', 'Your passwords do not match')
+
+        return cleaned_data
 
 class SalesReportForm(forms.Form):
     REPORT_PERIOD_CHOICES = [

@@ -1,6 +1,7 @@
 from django.urls import path
 from django.contrib.auth import views as auth_views
 from . import views
+from . import admin_views
 
 urlpatterns = [
     # Home and authentication
@@ -28,4 +29,17 @@ urlpatterns = [
     path('cart/add/<int:item_id>/', views.add_to_cart, name='add_to_cart'),
     path('cart/update/<int:item_id>/', views.update_cart_item, name='update_cart_item'),
     path('checkout/', views.checkout, name='checkout'),
+
+    # Custom Admin URLs (using custom-admin prefix to avoid conflicts with Django admin)
+    path('custom-admin/dashboard/', admin_views.admin_dashboard, name='admin_dashboard'),
+    path('custom-admin/users/', admin_views.user_list, name='user_list'),
+    path('custom-admin/users/create/', admin_views.user_create, name='user_create'),
+    path('custom-admin/users/<int:user_id>/', admin_views.user_detail, name='user_detail'),
+    path('custom-admin/users/<int:user_id>/edit/', admin_views.user_edit, name='user_edit'),
+    path('custom-admin/users/<int:user_id>/toggle-status/', admin_views.user_toggle_status, name='user_toggle_status'),
+    path('custom-admin/settings/', admin_views.system_settings, name='system_settings'),
+    path('custom-admin/settings/general/save/', admin_views.save_general_settings, name='save_general_settings'),
+    path('custom-admin/settings/payment/save/', admin_views.save_payment_settings, name='save_payment_settings'),
+    path('custom-admin/settings/cache/clear/', admin_views.clear_cache, name='clear_cache'),
+    path('custom-admin/settings/database/backup/', admin_views.backup_database, name='backup_database'),
 ]

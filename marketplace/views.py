@@ -58,7 +58,9 @@ class CustomLoginView(LoginView):
     def get_success_url(self):
         # Redirect to appropriate dashboard based on user type
         user = self.request.user
-        if user.is_seller:
+        if user.is_superuser:
+            return '/custom-admin/dashboard/'
+        elif user.is_seller:
             return '/seller/dashboard/'
         elif user.is_buyer:
             return '/buyer/dashboard/'

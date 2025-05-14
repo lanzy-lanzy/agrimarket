@@ -1,0 +1,194 @@
+{% extends 'admin/admin_base.html' %}
+{% load static %}
+
+{% block title %}System Settings - AgriMarket{% endblock %}
+
+{% block page_title %}System Settings{% endblock %}
+
+{% block dashboard_content %}
+<div class="bg-white rounded-lg shadow-md overflow-hidden mb-8">
+    <div class="p-6 border-b border-agri-cream bg-agri-brown">
+        <div class="flex justify-between items-center">
+            <h2 class="text-xl font-semibold text-white flex items-center">
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z" />
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
+                </svg>
+                System Settings
+            </h2>
+            <a href="{% url 'admin_dashboard' %}" class="bg-agri-cream text-agri-brown-darker px-4 py-2 rounded-md hover:bg-white transition-colors flex items-center">
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18" />
+                </svg>
+                Back to Dashboard
+            </a>
+        </div>
+    </div>
+    
+    <div class="p-6">
+        <div class="max-w-4xl mx-auto">
+            {% if messages %}
+            <div class="mb-6">
+                {% for message in messages %}
+                <div class="{% if message.tags == 'success' %}bg-green-50 border-l-4 border-green-500{% elif message.tags == 'error' %}bg-red-50 border-l-4 border-red-500{% else %}bg-blue-50 border-l-4 border-blue-500{% endif %} p-4 rounded-md">
+                    <div class="flex items-center">
+                        <div class="flex-shrink-0">
+                            {% if message.tags == 'success' %}
+                            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-green-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" />
+                            </svg>
+                            {% elif message.tags == 'error' %}
+                            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-red-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
+                            </svg>
+                            {% else %}
+                            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-blue-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                            </svg>
+                            {% endif %}
+                        </div>
+                        <div class="ml-3">
+                            <p class="text-sm font-medium {% if message.tags == 'success' %}text-green-800{% elif message.tags == 'error' %}text-red-800{% else %}text-blue-800{% endif %}">{{ message }}</p>
+                        </div>
+                    </div>
+                </div>
+                {% endfor %}
+            </div>
+            {% endif %}
+            
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+                <!-- Navigation Sidebar -->
+                <div class="bg-agri-cream/20 rounded-lg p-4">
+                    <h3 class="text-lg font-semibold text-agri-brown-darker mb-4">Settings</h3>
+                    <nav class="space-y-1" aria-label="Settings Navigation">
+                        <a href="#general" class="flex items-center px-3 py-2 text-sm font-medium rounded-md bg-agri-brown text-white">
+                            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z" />
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
+                            </svg>
+                            General
+                        </a>
+                        <a href="#payment" class="flex items-center px-3 py-2 text-sm font-medium rounded-md text-agri-brown-darker hover:bg-agri-cream/50 hover:text-agri-brown-dark">
+                            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 10h18M7 15h1m4 0h1m-7 4h12a3 3 0 003-3V8a3 3 0 00-3-3H6a3 3 0 00-3 3v8a3 3 0 003 3z" />
+                            </svg>
+                            Payment
+                        </a>
+                        <a href="#email" class="flex items-center px-3 py-2 text-sm font-medium rounded-md text-agri-brown-darker hover:bg-agri-cream/50 hover:text-agri-brown-dark">
+                            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />
+                            </svg>
+                            Email
+                        </a>
+                        <a href="#backup" class="flex items-center px-3 py-2 text-sm font-medium rounded-md text-agri-brown-darker hover:bg-agri-cream/50 hover:text-agri-brown-dark">
+                            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7H5a2 2 0 00-2 2v9a2 2 0 002 2h14a2 2 0 002-2V9a2 2 0 00-2-2h-3m-1 4l-3 3m0 0l-3-3m3 3V4" />
+                            </svg>
+                            Backup & Restore
+                        </a>
+                        <a href="#maintenance" class="flex items-center px-3 py-2 text-sm font-medium rounded-md text-agri-brown-darker hover:bg-agri-cream/50 hover:text-agri-brown-dark">
+                            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5.882V19.24a1.76 1.76 0 01-3.417.592l-2.147-6.15M18 13a3 3 0 100-6M5.436 13.683A4.001 4.001 0 017 6h1.832c4.1 0 7.625-1.234 9.168-3v14c-1.543-1.766-5.067-3-9.168-3H7a3.988 3.988 0 01-1.564-.317z" />
+                            </svg>
+                            Maintenance
+                        </a>
+                    </nav>
+                </div>
+                
+                <!-- Settings Content -->
+                <div class="md:col-span-2 space-y-6">
+                    <!-- General Settings -->
+                    <div id="general" class="bg-white p-6 rounded-lg shadow-sm border border-agri-cream">
+                        <h3 class="text-lg font-semibold text-agri-brown-darker mb-4 flex items-center">
+                            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z" />
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
+                            </svg>
+                            General Settings
+                        </h3>
+                        <form method="post" action="{% url 'save_general_settings' %}" class="space-y-4">
+                            {% csrf_token %}
+                            <div>
+                                <label for="site_name" class="block text-sm font-medium text-agri-brown-darker mb-1">Site Name</label>
+                                <input type="text" name="site_name" id="site_name" class="w-full rounded-md border-agri-brown/30 focus:border-agri-brown focus:ring focus:ring-agri-brown/20" value="AgriMarket">
+                            </div>
+                            <div>
+                                <label for="site_description" class="block text-sm font-medium text-agri-brown-darker mb-1">Site Description</label>
+                                <textarea name="site_description" id="site_description" rows="3" class="w-full rounded-md border-agri-brown/30 focus:border-agri-brown focus:ring focus:ring-agri-brown/20">Your one-stop marketplace for livestock and poultry.</textarea>
+                            </div>
+                            <div>
+                                <label for="contact_email" class="block text-sm font-medium text-agri-brown-darker mb-1">Contact Email</label>
+                                <input type="email" name="contact_email" id="contact_email" class="w-full rounded-md border-agri-brown/30 focus:border-agri-brown focus:ring focus:ring-agri-brown/20" value="contact@agrimarket.com">
+                            </div>
+                            <div>
+                                <label for="items_per_page" class="block text-sm font-medium text-agri-brown-darker mb-1">Items Per Page</label>
+                                <input type="number" name="items_per_page" id="items_per_page" min="5" max="100" class="w-full rounded-md border-agri-brown/30 focus:border-agri-brown focus:ring focus:ring-agri-brown/20" value="10">
+                            </div>
+                            <div class="flex justify-end">
+                                <button type="submit" class="px-4 py-2 bg-agri-brown text-white rounded-md hover:bg-agri-brown-dark transition-colors">Save Changes</button>
+                            </div>
+                        </form>
+                    </div>
+                    
+                    <!-- Payment Settings -->
+                    <div id="payment" class="bg-white p-6 rounded-lg shadow-sm border border-agri-cream">
+                        <h3 class="text-lg font-semibold text-agri-brown-darker mb-4 flex items-center">
+                            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 10h18M7 15h1m4 0h1m-7 4h12a3 3 0 003-3V8a3 3 0 00-3-3H6a3 3 0 00-3 3v8a3 3 0 003 3z" />
+                            </svg>
+                            Payment Settings
+                        </h3>
+                        <form method="post" action="{% url 'save_payment_settings' %}" class="space-y-4">
+                            {% csrf_token %}
+                            <div>
+                                <label for="gcash_number" class="block text-sm font-medium text-agri-brown-darker mb-1">GCash Number</label>
+                                <input type="text" name="gcash_number" id="gcash_number" class="w-full rounded-md border-agri-brown/30 focus:border-agri-brown focus:ring focus:ring-agri-brown/20" value="09123456789">
+                            </div>
+                            <div>
+                                <label for="gcash_name" class="block text-sm font-medium text-agri-brown-darker mb-1">GCash Account Name</label>
+                                <input type="text" name="gcash_name" id="gcash_name" class="w-full rounded-md border-agri-brown/30 focus:border-agri-brown focus:ring focus:ring-agri-brown/20" value="AgriMarket Inc.">
+                            </div>
+                            <div class="flex justify-end">
+                                <button type="submit" class="px-4 py-2 bg-agri-brown text-white rounded-md hover:bg-agri-brown-dark transition-colors">Save Changes</button>
+                            </div>
+                        </form>
+                    </div>
+                    
+                    <!-- Maintenance Tools -->
+                    <div id="maintenance" class="bg-white p-6 rounded-lg shadow-sm border border-agri-cream">
+                        <h3 class="text-lg font-semibold text-agri-brown-darker mb-4 flex items-center">
+                            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5.882V19.24a1.76 1.76 0 01-3.417.592l-2.147-6.15M18 13a3 3 0 100-6M5.436 13.683A4.001 4.001 0 017 6h1.832c4.1 0 7.625-1.234 9.168-3v14c-1.543-1.766-5.067-3-9.168-3H7a3.988 3.988 0 01-1.564-.317z" />
+                            </svg>
+                            Maintenance Tools
+                        </h3>
+                        <div class="space-y-4">
+                            <div class="flex items-center justify-between p-4 bg-agri-cream/20 rounded-lg">
+                                <div>
+                                    <h4 class="font-medium text-agri-brown-darker">Clear Cache</h4>
+                                    <p class="text-sm text-agri-brown">Clear system cache to improve performance</p>
+                                </div>
+                                <a href="{% url 'clear_cache' %}" class="px-4 py-2 bg-agri-brown text-white rounded-md hover:bg-agri-brown-dark transition-colors">Clear Now</a>
+                            </div>
+                            <div class="flex items-center justify-between p-4 bg-agri-cream/20 rounded-lg">
+                                <div>
+                                    <h4 class="font-medium text-agri-brown-darker">Database Backup</h4>
+                                    <p class="text-sm text-agri-brown">Create a backup of the database</p>
+                                </div>
+                                <a href="{% url 'backup_database' %}" class="px-4 py-2 bg-agri-brown text-white rounded-md hover:bg-agri-brown-dark transition-colors">Backup Now</a>
+                            </div>
+                            <div class="flex items-center justify-between p-4 bg-agri-cream/20 rounded-lg">
+                                <div>
+                                    <h4 class="font-medium text-agri-brown-darker">Maintenance Mode</h4>
+                                    <p class="text-sm text-agri-brown">Put the site in maintenance mode</p>
+                                </div>
+                                <button type="button" class="px-4 py-2 bg-red-600 text-white rounded-md hover:bg-red-700 transition-colors" onclick="return confirm('Are you sure you want to enable maintenance mode? This will make the site inaccessible to regular users.')">Enable</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

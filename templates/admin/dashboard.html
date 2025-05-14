@@ -1,0 +1,251 @@
+{% extends 'admin/admin_base.html' %}
+{% load static %}
+
+{% block title %}Admin Dashboard - AgriMarket{% endblock %}
+
+{% block page_title %}Admin Dashboard{% endblock %}
+
+{% block dashboard_content %}
+<!-- Dashboard Visualization -->
+<div id="dashboard-visualization" class="h-48 mb-6 rounded-lg overflow-hidden shadow-md"></div>
+
+<!-- Stats Overview -->
+<div id="stats-overview" class="grid grid-cols-1 md:grid-cols-4 gap-6 mb-8"
+     data-users="{{ total_users }}"
+     data-sellers="{{ total_sellers }}"
+     data-buyers="{{ total_buyers }}"
+     data-items="{{ total_items }}">
+    <div class="dashboard-card bg-white p-6 rounded-lg shadow-md border-t-4 border-agri-brown transform transition-all duration-300 hover:shadow-lg hover:-translate-y-1">
+        <div class="flex items-center mb-2">
+            <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 text-agri-brown mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z" />
+            </svg>
+            <h2 class="text-lg font-semibold text-agri-brown-darker">Total Users</h2>
+        </div>
+        <p class="text-3xl font-bold text-agri-brown">{{ total_users }}</p>
+    </div>
+    <div class="dashboard-card bg-white p-6 rounded-lg shadow-md border-t-4 border-agri-brown transform transition-all duration-300 hover:shadow-lg hover:-translate-y-1">
+        <div class="flex items-center mb-2">
+            <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 text-agri-brown mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z" />
+            </svg>
+            <h2 class="text-lg font-semibold text-agri-brown-darker">Sellers</h2>
+        </div>
+        <p class="text-3xl font-bold text-agri-brown">{{ total_sellers }}</p>
+    </div>
+    <div class="dashboard-card bg-white p-6 rounded-lg shadow-md border-t-4 border-agri-brown transform transition-all duration-300 hover:shadow-lg hover:-translate-y-1">
+        <div class="flex items-center mb-2">
+            <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 text-agri-brown mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 3h2l.4 2M7 13h10l4-8H5.4M7 13L5.4 5M7 13l-2.293 2.293c-.63.63-.184 1.707.707 1.707H17m0 0a2 2 0 100 4 2 2 0 000-4zm-8 2a2 2 0 11-4 0 2 2 0 014 0z" />
+            </svg>
+            <h2 class="text-lg font-semibold text-agri-brown-darker">Buyers</h2>
+        </div>
+        <p class="text-3xl font-bold text-agri-brown">{{ total_buyers }}</p>
+    </div>
+    <div class="dashboard-card bg-white p-6 rounded-lg shadow-md border-t-4 border-agri-brown transform transition-all duration-300 hover:shadow-lg hover:-translate-y-1">
+        <div class="flex items-center mb-2">
+            <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 text-agri-brown mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4" />
+            </svg>
+            <h2 class="text-lg font-semibold text-agri-brown-darker">Total Items</h2>
+        </div>
+        <p class="text-3xl font-bold text-agri-brown">{{ total_items }}</p>
+    </div>
+</div>
+
+<!-- User Management -->
+<div class="dashboard-card bg-white rounded-lg shadow-md overflow-hidden mb-8">
+    <div class="p-6 border-b border-agri-cream bg-agri-brown">
+        <div class="flex justify-between items-center">
+            <h2 class="text-xl font-semibold text-white flex items-center">
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z" />
+                </svg>
+                User Management
+            </h2>
+            <a href="{% url 'user_create' %}" class="bg-agri-cream text-agri-brown-darker px-4 py-2 rounded-md hover:bg-white transition-colors flex items-center">
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4" />
+                </svg>
+                Add New User
+            </a>
+        </div>
+    </div>
+    <div class="p-6">
+        {% if recent_users %}
+        <div class="overflow-x-auto">
+            <table class="w-full">
+                <thead class="bg-agri-cream/50">
+                    <tr>
+                        <th class="px-6 py-3 text-left text-xs font-medium text-agri-brown-darker uppercase tracking-wider">Username</th>
+                        <th class="px-6 py-3 text-left text-xs font-medium text-agri-brown-darker uppercase tracking-wider">Email</th>
+                        <th class="px-6 py-3 text-left text-xs font-medium text-agri-brown-darker uppercase tracking-wider">Role</th>
+                        <th class="px-6 py-3 text-left text-xs font-medium text-agri-brown-darker uppercase tracking-wider">Status</th>
+                        <th class="px-6 py-3 text-left text-xs font-medium text-agri-brown-darker uppercase tracking-wider">Actions</th>
+                    </tr>
+                </thead>
+                <tbody class="divide-y divide-agri-cream/30">
+                    {% for user in recent_users %}
+                    <tr class="hover:bg-agri-cream/10">
+                        <td class="px-6 py-4 whitespace-nowrap">
+                            <div class="flex items-center">
+                                <div class="flex-shrink-0 h-10 w-10 rounded-full bg-agri-brown flex items-center justify-center text-white font-bold">
+                                    {{ user.username.0|upper }}
+                                </div>
+                                <div class="ml-4">
+                                    <div class="text-sm font-medium text-agri-brown-darker">{{ user.username }}</div>
+                                    <div class="text-sm text-agri-brown">Joined {{ user.date_joined|date:"M d, Y" }}</div>
+                                </div>
+                            </div>
+                        </td>
+                        <td class="px-6 py-4 whitespace-nowrap">
+                            <div class="text-sm text-agri-brown-darker">{{ user.email }}</div>
+                        </td>
+                        <td class="px-6 py-4 whitespace-nowrap">
+                            <div class="flex space-x-1">
+                                {% if user.is_superuser %}
+                                <span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-purple-100 text-purple-800">
+                                    Admin
+                                </span>
+                                {% endif %}
+                                {% if user.is_seller %}
+                                <span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-green-100 text-green-800">
+                                    Seller
+                                </span>
+                                {% endif %}
+                                {% if user.is_buyer %}
+                                <span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-blue-100 text-blue-800">
+                                    Buyer
+                                </span>
+                                {% endif %}
+                            </div>
+                        </td>
+                        <td class="px-6 py-4 whitespace-nowrap">
+                            {% if user.is_active %}
+                            <span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-green-100 text-green-800">
+                                Active
+                            </span>
+                            {% else %}
+                            <span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-red-100 text-red-800">
+                                Inactive
+                            </span>
+                            {% endif %}
+                        </td>
+                        <td class="px-6 py-4 whitespace-nowrap text-sm font-medium">
+                            <a href="{% url 'user_detail' user.id %}" class="text-agri-brown hover:text-agri-brown-dark mr-3">View</a>
+                            <a href="{% url 'user_edit' user.id %}" class="text-agri-brown hover:text-agri-brown-dark">Edit</a>
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+        <div class="mt-4 text-center">
+            <a href="{% url 'user_list' %}" class="inline-flex items-center text-agri-brown hover:text-agri-brown-dark">
+                <span>View All Users</span>
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 ml-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14 5l7 7m0 0l-7 7m7-7H3" />
+                </svg>
+            </a>
+        </div>
+        {% else %}
+        <div class="text-center py-8">
+            <svg xmlns="http://www.w3.org/2000/svg" class="h-16 w-16 mx-auto text-agri-cream mb-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z" />
+            </svg>
+            <p class="text-agri-brown-darker mb-4">No users found in the system.</p>
+            <a href="{% url 'user_create' %}" class="bg-agri-brown text-white px-6 py-2 rounded-md hover:bg-agri-brown-dark transition-colors inline-flex items-center">
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4" />
+                </svg>
+                Add your first user
+            </a>
+        </div>
+        {% endif %}
+    </div>
+</div>
+
+<!-- System Status -->
+<div class="dashboard-card bg-white rounded-lg shadow-md overflow-hidden mb-8">
+    <div class="p-6 border-b border-agri-cream bg-agri-brown">
+        <div class="flex justify-between items-center">
+            <h2 class="text-xl font-semibold text-white flex items-center">
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z" />
+                </svg>
+                System Status
+            </h2>
+            <a href="{% url 'system_settings' %}" class="bg-agri-cream text-agri-brown-darker px-4 py-2 rounded-md hover:bg-white transition-colors flex items-center">
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z" />
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
+                </svg>
+                Settings
+            </a>
+        </div>
+    </div>
+    <div class="p-6">
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+            <div class="bg-agri-cream/20 p-4 rounded-lg">
+                <h3 class="text-agri-brown-darker font-semibold mb-2">Recent Activity</h3>
+                <ul class="space-y-2">
+                    <li class="flex items-start">
+                        <div class="flex-shrink-0 h-4 w-4 rounded-full bg-green-500 mt-1"></div>
+                        <div class="ml-2">
+                            <p class="text-sm text-agri-brown-darker">System is running normally</p>
+                            <p class="text-xs text-agri-brown">All services operational</p>
+                        </div>
+                    </li>
+                    <li class="flex items-start">
+                        <div class="flex-shrink-0 h-4 w-4 rounded-full bg-green-500 mt-1"></div>
+                        <div class="ml-2">
+                            <p class="text-sm text-agri-brown-darker">Database is healthy</p>
+                            <p class="text-xs text-agri-brown">Last backup: {{ now|date:"M d, Y H:i" }}</p>
+                        </div>
+                    </li>
+                    <li class="flex items-start">
+                        <div class="flex-shrink-0 h-4 w-4 rounded-full bg-green-500 mt-1"></div>
+                        <div class="ml-2">
+                            <p class="text-sm text-agri-brown-darker">Payment system is active</p>
+                            <p class="text-xs text-agri-brown">GCash integration working properly</p>
+                        </div>
+                    </li>
+                </ul>
+            </div>
+            <div class="bg-agri-cream/20 p-4 rounded-lg">
+                <h3 class="text-agri-brown-darker font-semibold mb-2">Quick Actions</h3>
+                <div class="space-y-2">
+                    <a href="{% url 'user_create' %}" class="block p-2 bg-white rounded hover:bg-agri-cream/50 transition-colors">
+                        <div class="flex items-center">
+                            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-agri-brown mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M18 9v3m0 0v3m0-3h3m-3 0h-3m-2-5a4 4 0 11-8 0 4 4 0 018 0zM3 20a6 6 0 0112 0v1H3v-1z" />
+                            </svg>
+                            <span class="text-sm text-agri-brown-darker">Add New User</span>
+                        </div>
+                    </a>
+                    <a href="{% url 'user_list' %}" class="block p-2 bg-white rounded hover:bg-agri-cream/50 transition-colors">
+                        <div class="flex items-center">
+                            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-agri-brown mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z" />
+                            </svg>
+                            <span class="text-sm text-agri-brown-darker">Manage Users</span>
+                        </div>
+                    </a>
+                    <a href="{% url 'system_settings' %}" class="block p-2 bg-white rounded hover:bg-agri-cream/50 transition-colors">
+                        <div class="flex items-center">
+                            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-agri-brown mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z" />
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
+                            </svg>
+                            <span class="text-sm text-agri-brown-darker">System Settings</span>
+                        </div>
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Include the admin dashboard JavaScript -->
+<script src="{% static 'js/admin-dashboard.js' %}"></script>
+{% endblock %}

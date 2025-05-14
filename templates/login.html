@@ -205,6 +205,8 @@
     <div class="auth-header">
         <h1 class="auth-title">Welcome Back</h1>
         <p class="auth-subtitle">Login to access your AgriMarket account</p>
+        <!-- Hidden input to ensure proper redirection -->
+        <input type="hidden" name="next" value="{{ next|default:'' }}">
     </div>
 
     <div class="auth-form">
@@ -221,7 +223,7 @@
         </div>
         {% endif %}
 
-        <form method="post">
+        <form method="post" action="{% url 'login' %}">
             {% csrf_token %}
 
             <div class="form-group">
@@ -244,10 +246,23 @@
                 </div>
             </div>
 
-            <button type="submit" class="submit-button">
+            <button type="submit" class="submit-button" id="login-button">
                 <span>Login to Your Account</span>
             </button>
         </form>
+
+        <!-- Add a small script to ensure proper form submission -->
+        <script>
+            document.addEventListener('DOMContentLoaded', function() {
+                // No need to add a click handler as the button is already a submit button
+                // Just add a form submit handler to log the submission for debugging
+                const form = document.querySelector('form');
+                form.addEventListener('submit', function(e) {
+                    console.log('Form submitted');
+                    // Don't prevent default - let the form submit normally
+                });
+            });
+        </script>
     </div>
 
     <div class="auth-footer">
