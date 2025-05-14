@@ -1,109 +1,354 @@
-{% extends 'base.html' %}
+{% extends 'buyer/buyer_base.html' %}
 {% load currency_filters %}
 
 {% block title %}Your Cart - AgriMarket{% endblock %}
 
-{% block content %}
+{% block page_title %}Your Cart{% endblock %}
+
+{% block dashboard_content %}
 <div class="space-y-6">
-    <div class="flex justify-between items-center">
-        <h1 class="text-2xl font-bold">Your Cart</h1>
-        <a href="{% url 'browse_items' %}" class="text-green-700 hover:underline">Continue Shopping</a>
+    <div class="flex justify-between items-center mb-6">
+        <div class="flex items-center">
+            <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 text-agri-brown mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 3h2l.4 2M7 13h10l4-8H5.4M7 13L5.4 5M7 13l-2.293 2.293c-.63.63-.184 1.707.707 1.707H17m0 0a2 2 0 100 4 2 2 0 000-4zm-8 2a2 2 0 11-4 0 2 2 0 014 0z" />
+            </svg>
+            <h2 class="text-xl font-semibold text-agri-brown-darker">Shopping Cart</h2>
+        </div>
+        <a href="{% url 'browse_items' %}" class="text-agri-brown hover:text-agri-brown-dark transition-colors flex items-center">
+            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+            </svg>
+            Continue Shopping
+        </a>
     </div>
 
     {% if cart.items.exists %}
     <div class="bg-white rounded-lg shadow-md overflow-hidden">
         <div class="overflow-x-auto">
-            <table class="w-full">
-                <thead class="bg-gray-50">
+            <!-- Desktop Table (hidden on small screens) -->
+            <table class="w-full hidden md:table">
+                <thead class="bg-agri-cream/50">
                     <tr>
-                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Item</th>
-                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Price</th>
-                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Quantity</th>
-                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Total</th>
-                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Actions</th>
+                        <th class="px-6 py-3 text-left text-xs font-medium text-agri-brown-darker uppercase tracking-wider">Item</th>
+                        <th class="px-6 py-3 text-left text-xs font-medium text-agri-brown-darker uppercase tracking-wider">Price</th>
+                        <th class="px-6 py-3 text-left text-xs font-medium text-agri-brown-darker uppercase tracking-wider">Quantity</th>
+                        <th class="px-6 py-3 text-left text-xs font-medium text-agri-brown-darker uppercase tracking-wider">Total</th>
+                        <th class="px-6 py-3 text-left text-xs font-medium text-agri-brown-darker uppercase tracking-wider">Actions</th>
                     </tr>
                 </thead>
-                <tbody class="divide-y divide-gray-200">
+                <tbody class="divide-y divide-agri-cream/30">
                     {% for cart_item in cart.items.all %}
-                    <tr id="cart-item-{{ cart_item.id }}">
+                    <tr id="cart-item-{{ cart_item.id }}" class="hover:bg-agri-cream/10 transition-colors">
                         <td class="px-6 py-4 whitespace-nowrap">
                             <div class="flex items-center">
                                 {% if cart_item.item.image %}
-                                <img src="{{ cart_item.item.image.url }}" alt="{{ cart_item.item.name }}" class="h-12 w-12 object-cover rounded mr-4">
+                                <img src="{{ cart_item.item.image.url }}" alt="{{ cart_item.item.name }}" class="h-12 w-12 object-cover rounded-md shadow-sm mr-4">
                                 {% else %}
-                                <div class="h-12 w-12 bg-gray-200 rounded mr-4 flex items-center justify-center">
-                                    <span class="text-gray-500 text-xs">No image</span>
+                                <div class="h-12 w-12 bg-agri-cream rounded-md mr-4 flex items-center justify-center shadow-sm">
+                                    <span class="text-agri-brown-darker text-xs">No image</span>
                                 </div>
                                 {% endif %}
                                 <div>
-                                    <div class="text-sm font-medium text-gray-900">{{ cart_item.item.name }}</div>
-                                    <div class="text-sm text-gray-500">{{ cart_item.item.get_category_display }}</div>
+                                    <div class="text-sm font-medium text-agri-brown-darker">{{ cart_item.item.name }}</div>
+                                    <div class="text-xs text-agri-brown">{{ cart_item.item.get_category_display }}</div>
                                 </div>
                             </div>
                         </td>
                         <td class="px-6 py-4 whitespace-nowrap">
-                            <div class="text-sm text-gray-900">{{ cart_item.item.price|currency }}</div>
+                            <div class="text-sm text-agri-brown-darker">{{ cart_item.item.price|currency }}</div>
                         </td>
                         <td class="px-6 py-4 whitespace-nowrap">
                             <div class="flex items-center">
-                                <form method="POST" action="{% url 'update_cart_item' cart_item.item.id %}" class="inline">
-                                    {% csrf_token %}
-                                    <input type="hidden" name="action" value="decrease">
-                                    <button type="submit" class="bg-gray-200 text-gray-700 w-8 h-8 rounded-full flex items-center justify-center hover:bg-gray-300">
-                                        <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20 12H4" />
-                                        </svg>
-                                    </button>
-                                </form>
-                                <span class="mx-3 text-gray-700">{{ cart_item.quantity }}</span>
-                                <form method="POST" action="{% url 'update_cart_item' cart_item.item.id %}" class="inline">
-                                    {% csrf_token %}
-                                    <input type="hidden" name="action" value="increase">
-                                    <button type="submit" class="bg-gray-200 text-gray-700 w-8 h-8 rounded-full flex items-center justify-center hover:bg-gray-300">
-                                        <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6" />
-                                        </svg>
-                                    </button>
-                                </form>
+                                <button hx-post="{% url 'update_cart_item' cart_item.item.id %}"
+                                        hx-headers='{"X-CSRFToken": "{{ csrf_token }}", "X-Requested-With": "XMLHttpRequest"}'
+                                        hx-swap="none"
+                                        hx-vals='{"action": "decrease"}'
+                                        class="bg-agri-cream text-agri-brown w-8 h-8 rounded-full flex items-center justify-center hover:bg-agri-brown hover:text-white transition-colors">
+                                    <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20 12H4" />
+                                    </svg>
+                                </button>
+                                <span id="item-qty-{{ cart_item.id }}-desktop" class="mx-3 text-agri-brown-darker font-medium item-quantity">{{ cart_item.quantity }}</span>
+                                <button hx-post="{% url 'update_cart_item' cart_item.item.id %}"
+                                        hx-headers='{"X-CSRFToken": "{{ csrf_token }}", "X-Requested-With": "XMLHttpRequest"}'
+                                        hx-swap="none"
+                                        hx-vals='{"action": "increase"}'
+                                        class="bg-agri-cream text-agri-brown w-8 h-8 rounded-full flex items-center justify-center hover:bg-agri-brown hover:text-white transition-colors">
+                                    <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6" />
+                                    </svg>
+                                </button>
                             </div>
                         </td>
                         <td class="px-6 py-4 whitespace-nowrap">
-                            <div class="text-sm font-medium text-gray-900">{{ cart_item.total_price|currency }}</div>
+                            <div id="item-total-{{ cart_item.id }}-desktop" class="text-sm font-medium text-agri-brown item-total">{{ cart_item.total_price|currency }}</div>
                         </td>
                         <td class="px-6 py-4 whitespace-nowrap">
-                            <form method="POST" action="{% url 'update_cart_item' cart_item.item.id %}" class="inline">
-                                {% csrf_token %}
-                                <input type="hidden" name="action" value="remove">
-                                <button type="submit" class="text-red-600 hover:text-red-900">
-                                    Remove
-                                </button>
-                            </form>
+                            <button hx-post="{% url 'update_cart_item' cart_item.item.id %}"
+                                    hx-headers='{"X-CSRFToken": "{{ csrf_token }}", "X-Requested-With": "XMLHttpRequest"}'
+                                    hx-swap="none"
+                                    hx-vals='{"action": "remove"}'
+                                    class="text-agri-brown hover:text-red-600 transition-colors flex items-center">
+                                <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 mr-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
+                                </svg>
+                                Remove
+                            </button>
                         </td>
                     </tr>
                     {% endfor %}
                 </tbody>
             </table>
+
+            <!-- Mobile Card View (visible only on small screens) -->
+            <div class="md:hidden">
+                {% for cart_item in cart.items.all %}
+                <div id="cart-item-mobile-{{ cart_item.id }}" class="p-4 border-b border-agri-cream/30 last:border-b-0">
+                    <div class="flex items-start mb-3">
+                        {% if cart_item.item.image %}
+                        <img src="{{ cart_item.item.image.url }}" alt="{{ cart_item.item.name }}" class="h-16 w-16 object-cover rounded-md shadow-sm mr-4">
+                        {% else %}
+                        <div class="h-16 w-16 bg-agri-cream rounded-md mr-4 flex items-center justify-center shadow-sm">
+                            <span class="text-agri-brown-darker text-xs">No image</span>
+                        </div>
+                        {% endif %}
+                        <div class="flex-1">
+                            <div class="text-sm font-medium text-agri-brown-darker mb-1">{{ cart_item.item.name }}</div>
+                            <div class="text-xs text-agri-brown mb-2">{{ cart_item.item.get_category_display }}</div>
+                            <div class="text-sm text-agri-brown-darker font-medium">Price: {{ cart_item.item.price|currency }}</div>
+                        </div>
+                    </div>
+
+                    <div class="flex justify-between items-center">
+                        <div class="flex items-center">
+                            <button hx-post="{% url 'update_cart_item' cart_item.item.id %}"
+                                    hx-headers='{"X-CSRFToken": "{{ csrf_token }}", "X-Requested-With": "XMLHttpRequest"}'
+                                    hx-swap="none"
+                                    hx-vals='{"action": "decrease"}'
+                                    class="bg-agri-cream text-agri-brown w-8 h-8 rounded-full flex items-center justify-center hover:bg-agri-brown hover:text-white transition-colors">
+                                <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20 12H4" />
+                                </svg>
+                            </button>
+                            <span id="item-qty-{{ cart_item.id }}-mobile" class="mx-3 text-agri-brown-darker font-medium item-quantity">{{ cart_item.quantity }}</span>
+                            <button hx-post="{% url 'update_cart_item' cart_item.item.id %}"
+                                    hx-headers='{"X-CSRFToken": "{{ csrf_token }}", "X-Requested-With": "XMLHttpRequest"}'
+                                    hx-swap="none"
+                                    hx-vals='{"action": "increase"}'
+                                    class="bg-agri-cream text-agri-brown w-8 h-8 rounded-full flex items-center justify-center hover:bg-agri-brown hover:text-white transition-colors">
+                                <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6" />
+                                </svg>
+                            </button>
+                        </div>
+
+                        <div class="flex items-center">
+                            <div class="mr-4">
+                                <div class="text-xs text-agri-brown">Total:</div>
+                                <div id="item-total-{{ cart_item.id }}-mobile" class="text-sm font-medium text-agri-brown-darker item-total">{{ cart_item.total_price|currency }}</div>
+                            </div>
+
+                            <button hx-post="{% url 'update_cart_item' cart_item.item.id %}"
+                                    hx-headers='{"X-CSRFToken": "{{ csrf_token }}", "X-Requested-With": "XMLHttpRequest"}'
+                                    hx-swap="none"
+                                    hx-vals='{"action": "remove"}'
+                                    class="text-red-500 hover:text-red-600 transition-colors">
+                                <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
+                                </svg>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+                {% endfor %}
+            </div>
         </div>
 
-        <div class="p-6 border-t">
+        <div class="p-6 border-t border-agri-cream/30 bg-gradient-to-r from-agri-cream/20 to-white">
             <div class="flex justify-between items-center mb-4">
-                <span class="text-lg font-semibold">Total:</span>
-                <span class="text-2xl font-bold text-green-700">{{ cart.total_price|currency }}</span>
+                <span class="text-lg font-semibold text-agri-brown-darker">Total:</span>
+                <span id="cart-total-price" class="text-2xl font-bold text-agri-brown">{{ cart.total_price|currency }}</span>
             </div>
             <div class="flex justify-end">
-                <a href="{% url 'checkout' %}" class="bg-green-700 text-white px-6 py-3 rounded-md hover:bg-green-800 transition">Proceed to Checkout</a>
+                <a href="{% url 'checkout' %}" class="bg-agri-brown text-white px-6 py-3 rounded-md hover:bg-agri-brown-dark transition-colors shadow-md hover:shadow-lg flex items-center">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 9V7a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2m2 4h10a2 2 0 002-2v-6a2 2 0 00-2-2H9a2 2 0 00-2 2v6a2 2 0 002 2zm7-5a2 2 0 11-4 0 2 2 0 014 0z" />
+                    </svg>
+                    Proceed to Checkout
+                </a>
             </div>
         </div>
     </div>
     {% else %}
     <div class="bg-white rounded-lg shadow-md p-8 text-center">
-        <svg xmlns="http://www.w3.org/2000/svg" class="h-16 w-16 text-gray-400 mx-auto mb-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+        <svg xmlns="http://www.w3.org/2000/svg" class="h-16 w-16 mx-auto text-agri-cream mb-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 3h2l.4 2M7 13h10l4-8H5.4M7 13L5.4 5M7 13l-2.293 2.293c-.63.63-.184 1.707.707 1.707H17m0 0a2 2 0 100 4 2 2 0 000-4zm-8 2a2 2 0 11-4 0 2 2 0 014 0z" />
         </svg>
-        <h2 class="text-xl font-semibold mb-2">Your cart is empty</h2>
-        <p class="text-gray-500 mb-4">Looks like you haven't added any items to your cart yet.</p>
-        <a href="{% url 'browse_items' %}" class="bg-green-700 text-white px-6 py-3 rounded-md hover:bg-green-800 transition inline-block">Browse Items</a>
+        <h2 class="text-xl font-semibold mb-2 text-agri-brown-darker">Your cart is empty</h2>
+        <p class="text-agri-brown mb-4">Looks like you haven't added any items to your cart yet.</p>
+        <a href="{% url 'browse_items' %}" class="bg-agri-brown text-white px-6 py-3 rounded-md hover:bg-agri-brown-dark transition-colors inline-flex items-center shadow-md hover:shadow-lg">
+            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+            </svg>
+            Browse Items
+        </a>
     </div>
     {% endif %}
 </div>
-{% endblock %}
+<!-- Cart Update Script for real-time updates -->
+<script>
+    document.body.addEventListener('htmx:afterRequest', function(event) {
+        // Check if the response has the cartUpdated trigger
+        if (event.detail.xhr.getResponseHeader('HX-Trigger') === 'cartUpdated') {
+            try {
+                // Parse the response to get the cart data
+                const response = JSON.parse(event.detail.xhr.responseText);
+                const cartCount = response.cart_items || 0;
+                const cartTotal = response.cart_total || 0;
+
+                // Format the cart total with currency
+                const formattedCartTotal = new Intl.NumberFormat('en-PH', {
+                    style: 'currency',
+                    currency: 'PHP',
+                    minimumFractionDigits: 2
+                }).format(cartTotal);
+
+                // Update the cart total in the UI if it exists
+                const cartTotalElement = document.getElementById('cart-total-price');
+                if (cartTotalElement) {
+                    cartTotalElement.textContent = formattedCartTotal;
+                }
+
+                // Update all cart count elements
+                const cartCountElements = document.querySelectorAll('.cart-count');
+                cartCountElements.forEach(function(element) {
+                    element.textContent = cartCount;
+
+                    // Hide the count if it's zero
+                    if (cartCount === 0) {
+                        element.style.display = 'none';
+                    } else {
+                        element.style.display = 'flex';
+                    }
+                });
+
+                // Update specific cart count elements by ID
+                const cartCountIds = ['cart-count', 'nav-cart-count', 'sidebar-cart-count'];
+                cartCountIds.forEach(function(id) {
+                    const element = document.getElementById(id);
+                    if (element) {
+                        element.textContent = cartCount;
+
+                        // Hide the count if it's zero
+                        if (cartCount === 0) {
+                            element.style.display = 'none';
+                        } else {
+                            element.style.display = 'flex';
+                        }
+                    }
+                });
+
+                // If we're on the cart page, we need to update the item quantities and totals
+                // This will be triggered by the cart item buttons (increase, decrease, remove)
+                if (window.location.pathname.includes('/cart/')) {
+                    // Check if we have information about which item was updated
+                    const itemId = event.detail.requestConfig?.parameters?.item_id;
+                    const action = event.detail.requestConfig?.parameters?.action;
+
+                    if (action === 'remove') {
+                        // For remove actions, we'll fetch the entire updated cart
+                        fetch('{% url "view_cart" %}')
+                            .then(response => response.text())
+                            .then(html => {
+                                // Create a temporary element to parse the HTML
+                                const tempElement = document.createElement('div');
+                                tempElement.innerHTML = html;
+
+                                // Extract the cart table from the response
+                                const newCartTable = tempElement.querySelector('.bg-white.rounded-lg.shadow-md.overflow-hidden');
+
+                                // Replace the current cart table with the new one
+                                if (newCartTable) {
+                                    const currentCartTable = document.querySelector('.bg-white.rounded-lg.shadow-md.overflow-hidden');
+                                    if (currentCartTable) {
+                                        currentCartTable.innerHTML = newCartTable.innerHTML;
+                                    }
+                                }
+
+                                // If the cart is empty, we need to show the empty cart message
+                                if (cartCount === 0) {
+                                    const emptyCartMessage = tempElement.querySelector('.bg-white.rounded-lg.shadow-md.p-8.text-center');
+                                    if (emptyCartMessage) {
+                                        // Replace the entire content
+                                        document.querySelector('.space-y-6').innerHTML = tempElement.querySelector('.space-y-6').innerHTML;
+                                    }
+                                }
+
+                                // Re-attach event handlers to the new elements
+                                attachHtmxToCartButtons();
+                            })
+                            .catch(error => {
+                                console.error('Error updating cart table:', error);
+                            });
+                    } else {
+                        // For increase/decrease actions, we can just update the specific item
+                        // Find the cart item that triggered the event
+                        const cartItemRow = event.detail.elt.closest('tr');
+                        if (cartItemRow) {
+                            const cartItemId = cartItemRow.id.replace('cart-item-', '');
+
+                            // Fetch the updated cart data to get the new values
+                            fetch('{% url "view_cart" %}')
+                                .then(response => response.text())
+                                .then(html => {
+                                    const tempElement = document.createElement('div');
+                                    tempElement.innerHTML = html;
+
+                                    // Find the corresponding row in the new HTML
+                                    const newRow = tempElement.querySelector(`#cart-item-${cartItemId}`);
+                                    if (newRow) {
+                                        // Update the quantity and total price
+                                        const newQuantity = newRow.querySelector('.item-quantity').textContent.trim();
+                                        const newTotal = newRow.querySelector('.item-total').textContent.trim();
+
+                                        // Get the cart item ID
+                                        const cartItemId = cartItemRow.id.replace('cart-item-', '');
+
+                                        // Update desktop elements
+                                        const desktopQuantityElement = document.getElementById(`item-qty-${cartItemId}-desktop`);
+                                        const desktopTotalElement = document.getElementById(`item-total-${cartItemId}-desktop`);
+
+                                        if (desktopQuantityElement) desktopQuantityElement.textContent = newQuantity;
+                                        if (desktopTotalElement) desktopTotalElement.textContent = newTotal;
+
+                                        // Update mobile elements
+                                        const mobileQuantityElement = document.getElementById(`item-qty-${cartItemId}-mobile`);
+                                        const mobileTotalElement = document.getElementById(`item-total-${cartItemId}-mobile`);
+
+                                        if (mobileQuantityElement) mobileQuantityElement.textContent = newQuantity;
+                                        if (mobileTotalElement) mobileTotalElement.textContent = newTotal;
+                                    }
+                                })
+                                .catch(error => {
+                                    console.error('Error updating cart item:', error);
+                                });
+                        }
+                    }
+                }
+
+                // Helper function to re-attach HTMX to cart buttons after DOM updates
+                function attachHtmxToCartButtons() {
+                    document.querySelectorAll('button[hx-post]').forEach(button => {
+                        if (!button.getAttribute('hx-trigger')) {
+                            button.setAttribute('hx-trigger', 'click');
+                        }
+                    });
+                }
+
+            } catch (error) {
+                console.error('Error processing cart update:', error);
+            }
+        }
+    });
+</script>
+{% endblock dashboard_content %}

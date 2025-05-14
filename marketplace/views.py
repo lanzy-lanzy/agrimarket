@@ -6,7 +6,7 @@ from django.http import HttpResponse, JsonResponse
 from django.views.decorators.http import require_POST
 from django.contrib import messages
 from django.contrib.auth.views import LoginView
-from .models import User, Item, Cart, CartItem, Payment, Sale
+from .models import User, Item, Cart, CartItem, Payment, Sale, Notification
 from django.urls import reverse
 from .forms import CustomUserCreationForm, SalesReportForm
 from django.utils import timezone
@@ -513,10 +513,13 @@ def add_to_cart(request, item_id):
         cart_item.quantity += 1
         cart_item.save()
 
+    # Get the updated cart quantity after adding the item
+    updated_cart_quantity = cart.total_quantity()
+
     response = JsonResponse({
         'success': True,
         'cart_total': cart.total_price(),
-        'cart_items': cart.total_quantity()  # Use total_quantity instead of items.count()
+        'cart_items': updated_cart_quantity
     })
 
     # Add a custom header to trigger cart update
@@ -553,8 +556,23 @@ def update_cart_item(request, item_id):
     elif action == 'remove':
         cart_item.delete()
 
-    # Redirect back to the cart page instead of returning JSON
-    return redirect('view_cart')
+    # Get the updated cart quantity after the operation
+    updated_cart_quantity = cart.total_quantity()
+
+    # Always return a JSON response with HX-Trigger for HTMX to handle
+    # This ensures our cart.html script can update the UI in real-time
+    response = JsonResponse({
+        'success': True,
+        'cart_total': cart.total_price(),
+        'cart_items': updated_cart_quantity
+    })
+    response['HX-Trigger'] = 'cartUpdated'
+
+    # If it's not an AJAX request, add a redirect header for HTMX to follow
+    if request.headers.get('X-Requested-With') != 'XMLHttpRequest':
+        response['HX-Redirect'] = reverse('view_cart')
+
+    return response
 
 @login_required
 def checkout(request):
@@ -583,6 +601,26 @@ def checkout(request):
             status='pending'
         )
 
+        # Create notifications for each seller who has items in this cart
+        # Get unique sellers from the cart items
+        sellers = User.objects.filter(
+            item__cartitem__cart=cart
+        ).distinct()
+
+        for seller in sellers:
+            # Count items from this seller in the cart
+            seller_items_count = CartItem.objects.filter(
+                cart=cart,
+                item__seller=seller
+            ).count()
+
+            # Create a notification for this seller
+            Notification.objects.create(
+                recipient=seller,
+                message=f"New order from {request.user.username} with {seller_items_count} item(s)",
+                payment=payment
+            )
+
         # Sales records will be created when the payment is approved by the seller
 
         # Mark the current cart as processed by setting it to inactive
@@ -600,3 +638,20 @@ def checkout(request):
         return redirect('buyer_dashboard')
 
     return render(request, 'buyer/checkout.html', {'cart': cart})
+
+@login_required
+def mark_notification_read(request, notification_id):
+    """Mark a notification as read and redirect to the appropriate page"""
+    if not request.user.is_seller:
+        return redirect('home')
+
+    notification = get_object_or_404(Notification, id=notification_id, recipient=request.user)
+    notification.read = True
+    notification.save()
+
+    # If the notification is related to a payment, redirect to the payment detail page
+    if notification.payment:
+        return redirect('payment_detail', payment_id=notification.payment.id)
+
+    # Otherwise redirect back to the previous page or dashboard
+    return redirect(request.META.get('HTTP_REFERER', 'seller_dashboard'))

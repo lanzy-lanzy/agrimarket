@@ -1,5 +1,6 @@
 from django.db import models
 from django.contrib.auth.models import AbstractUser
+from django.utils import timezone
 
 # Extend the default User model
 class User(AbstractUser):
@@ -130,3 +131,21 @@ class Sale(models.Model):
 
     def __str__(self):
         return f"Sale of {self.item.name} to {self.buyer.username}"
+
+# Notification model for sellers
+class Notification(models.Model):
+    recipient = models.ForeignKey(User, on_delete=models.CASCADE, related_name='notifications', limit_choices_to={'is_seller': True})
+    message = models.CharField(max_length=255)
+    payment = models.ForeignKey(Payment, on_delete=models.CASCADE, related_name='notifications', null=True, blank=True)
+    read = models.BooleanField(default=False)
+    created_at = models.DateTimeField(auto_now_add=True)
+
+    class Meta:
+        ordering = ['-created_at']
+
+    def __str__(self):
+        return f"Notification for {self.recipient.username}: {self.message[:30]}..."
+
+    def mark_as_read(self):
+        self.read = True
+        self.save()

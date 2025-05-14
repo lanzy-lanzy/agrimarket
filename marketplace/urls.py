@@ -18,6 +18,7 @@ urlpatterns = [
     path('seller/payment/<int:payment_id>/approve/', views.approve_payment, name='approve_payment'),
     path('seller/sales-report/', views.sales_report, name='sales_report'),
     path('seller/sales-report/pdf/', views.generate_sales_pdf, name='generate_sales_pdf'),
+    path('seller/notification/<int:notification_id>/read/', views.mark_notification_read, name='mark_notification_read'),
 
     # Buyer URLs
     path('buyer/dashboard/', views.buyer_dashboard, name='buyer_dashboard'),

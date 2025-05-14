@@ -1,0 +1,446 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}Buyer Dashboard - AgriMarket{% endblock %}</title>
+
+    <!-- Tailwind CSS via CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+
+    <!-- Custom Tailwind Configuration -->
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        'agri-cream': '#FFF0D1',
+                        'agri-brown': '#795757',
+                        'agri-brown-dark': '#664343',
+                        'agri-brown-darker': '#3B3030',
+                    }
+                }
+            }
+        }
+    </script>
+
+    <!-- Alpine.js via CDN -->
+    <script defer src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js"></script>
+
+    <!-- HTMX via CDN -->
+    <script src="https://unpkg.com/htmx.org@1.9.10"></script>
+
+    <!-- Three.js via CDN -->
+    <script src="https://cdn.jsdelivr.net/npm/three@0.160.0/build/three.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/three@0.160.0/examples/js/controls/OrbitControls.js"></script>
+
+    <style>
+        [x-cloak] { display: none !important; }
+
+        /* Custom scrollbar for sidebar */
+        nav::-webkit-scrollbar {
+            width: 4px;
+        }
+
+        nav::-webkit-scrollbar-track {
+            background: #FFF0D1;
+        }
+
+        nav::-webkit-scrollbar-thumb {
+            background: #795757;
+            border-radius: 2px;
+        }
+
+        nav::-webkit-scrollbar-thumb:hover {
+            background: #664343;
+        }
+
+        /* Prevent body scrolling when dashboard is active */
+        body {
+            overflow: hidden;
+        }
+
+        /* Custom animations */
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+
+        .animate-fadeIn {
+            animation: fadeIn 0.5s ease-out;
+        }
+    </style>
+
+    {% block extra_head %}{% endblock %}
+</head>
+<body class="bg-agri-cream">
+    <div class="flex h-screen overflow-hidden" x-data="{
+        sidebarOpen: window.innerWidth >= 768, // Use md breakpoint (768px)
+        isMobile: window.innerWidth < 768,
+        init() {
+            // Handle window resize events
+            window.addEventListener('resize', () => {
+                const wasMobile = this.isMobile;
+                this.isMobile = window.innerWidth < 768;
+
+                // On desktop, always show sidebar
+                if (window.innerWidth >= 768) {
+                    if (!this.sidebarOpen) {
+                        this.sidebarOpen = true;
+                    }
+                }
+
+                // On mobile, hide sidebar by default
+                if (wasMobile !== this.isMobile) {
+                    if (this.isMobile && this.sidebarOpen) {
+                        this.sidebarOpen = false;
+                    }
+                }
+            });
+        }
+    }">
+    <!-- Sidebar - Hidden on mobile by default -->
+    <div class="relative flex flex-col flex-shrink-0 w-64 bg-agri-brown-darker text-white transition-all duration-300 shadow-xl"
+         :class="{'w-64': sidebarOpen, 'w-20': !sidebarOpen, 'hidden': !sidebarOpen && isMobile}">
+
+        <!-- Sidebar Header -->
+        <div class="flex items-center justify-between flex-shrink-0 p-4 bg-agri-brown" :class="{'justify-center': !sidebarOpen}">
+            <div class="flex items-center" x-show="sidebarOpen">
+                <img src="/static/img/agrimarket-logo.png" alt="AgriMarket" class="h-8 w-8 mr-2" onerror="this.src='data:image/svg+xml;utf8,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 24 24%22 fill=%22none%22 stroke=%22white%22 stroke-width=%222%22><path d=%22M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5%22/></svg>'; this.onerror=null;">
+                <span class="text-xl font-bold text-white">AgriMarket</span>
+            </div>
+            <!-- Only show the toggle button when sidebar is expanded -->
+            <button @click="sidebarOpen = !sidebarOpen" class="p-1 rounded-md hover:bg-agri-brown-dark hover:text-white text-white" x-show="!isMobile">
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h7" />
+                </svg>
+            </button>
+        </div>
+
+        <!-- Buyer Profile -->
+        <div class="flex flex-col items-center p-6 border-b border-agri-brown/30 bg-gradient-to-b from-agri-brown to-agri-brown-dark">
+            <div class="relative w-20 h-20 rounded-full bg-white/10 backdrop-blur-sm flex items-center justify-center text-white text-2xl font-bold mb-3 shadow-lg border-2 border-white/20">
+                {{ user.username.0|upper }}
+            </div>
+            <div x-show="sidebarOpen" class="text-center">
+                <h3 class="font-semibold text-white text-lg">{{ user.username }}</h3>
+                <div class="flex items-center justify-center mt-1">
+                    <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-green-100 text-green-800">
+                        <svg class="mr-1 h-2 w-2 text-green-400" fill="currentColor" viewBox="0 0 8 8">
+                            <circle cx="4" cy="4" r="3" />
+                        </svg>
+                        Buyer Account
+                    </span>
+                </div>
+            </div>
+        </div>
+
+        <!-- Sidebar Navigation -->
+        <nav class="flex-1 overflow-y-auto p-4">
+            <div class="text-xs uppercase text-white/50 font-semibold px-2 mb-3" x-show="sidebarOpen">Main Menu</div>
+            <ul class="space-y-2">
+                <!-- Dashboard -->
+                <li>
+                    <a href="{% url 'buyer_dashboard' %}" class="flex items-center p-3 rounded-lg hover:bg-white/10 transition-colors {% if request.resolver_match.url_name == 'buyer_dashboard' %}bg-white/10 text-white{% else %}text-white/80{% endif %}">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6" />
+                        </svg>
+                        <span class="ml-3" x-show="sidebarOpen">Dashboard</span>
+                    </a>
+                </li>
+
+                <!-- Browse Items -->
+                <li>
+                    <a href="{% url 'browse_items' %}" class="flex items-center p-3 rounded-lg hover:bg-white/10 transition-colors {% if request.resolver_match.url_name == 'browse_items' %}bg-white/10 text-white{% else %}text-white/80{% endif %}">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+                        </svg>
+                        <span class="ml-3" x-show="sidebarOpen">Browse Items</span>
+                    </a>
+                </li>
+
+                <!-- Shopping Cart -->
+                <li>
+                    <a href="{% url 'view_cart' %}" class="flex items-center p-3 rounded-lg hover:bg-white/10 transition-colors {% if request.resolver_match.url_name == 'view_cart' %}bg-white/10 text-white{% else %}text-white/80{% endif %}">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 3h2l.4 2M7 13h10l4-8H5.4M7 13L5.4 5M7 13l-2.293 2.293c-.63.63-.184 1.707.707 1.707H17m0 0a2 2 0 100 4 2 2 0 000-4zm-8 2a2 2 0 11-4 0 2 2 0 014 0z" />
+                        </svg>
+                        <span class="ml-3" x-show="sidebarOpen">Shopping Cart</span>
+                        {% if cart_quantity > 0 %}
+                        <span id="sidebar-cart-count" class="cart-count ml-auto bg-red-500 text-white rounded-full w-5 h-5 flex items-center justify-center text-xs font-medium">
+                            {{ cart_quantity }}
+                        </span>
+                        {% else %}
+                        <span id="sidebar-cart-count" class="cart-count ml-auto bg-red-500 text-white rounded-full w-5 h-5 flex items-center justify-center text-xs font-medium" style="display: none;">
+                            0
+                        </span>
+                        {% endif %}
+                    </a>
+                </li>
+
+                <!-- Order History -->
+                <li>
+                    <a href="{% url 'buyer_dashboard' %}" class="flex items-center p-3 rounded-lg hover:bg-white/10 transition-colors {% if request.resolver_match.url_name == 'order_history' %}bg-white/10 text-white{% else %}text-white/80{% endif %}">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2" />
+                        </svg>
+                        <span class="ml-3" x-show="sidebarOpen">Order History</span>
+                    </a>
+                </li>
+            </ul>
+        </nav>
+
+        <!-- Sidebar Footer -->
+        <div class="p-4 border-t border-white/10 mt-auto">
+            <a href="{% url 'home' %}" class="flex items-center p-3 rounded-lg hover:bg-white/10 transition-colors text-white/80">
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6" />
+                </svg>
+                <span class="ml-3 font-medium" x-show="sidebarOpen">Back to Home</span>
+            </a>
+        </div>
+    </div>
+
+    <!-- Main Content -->
+    <div class="flex-1 overflow-hidden flex flex-col bg-gray-50">
+        <!-- Top Bar -->
+        <div class="bg-white shadow-md p-4 flex justify-between items-center">
+            <div class="flex items-center">
+                <button @click="sidebarOpen = !sidebarOpen" class="p-2 mr-4 rounded-md text-agri-brown-darker hover:bg-agri-cream hover:text-agri-brown transition-colors flex items-center justify-center" x-show="isMobile">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h7" />
+                    </svg>
+                </button>
+                <h1 class="text-xl font-bold text-agri-brown-darker">{% block page_title %}Buyer Dashboard{% endblock %}</h1>
+            </div>
+            <div class="flex items-center space-x-4">
+                <!-- Date and Time -->
+                <div class="hidden md:block text-right">
+                    <div class="text-sm text-agri-brown-darker" id="current-date"></div>
+                    <div class="text-xs text-agri-brown" id="current-time"></div>
+                </div>
+
+                
+                <!-- User Profile -->
+                <div x-data="{ open: false }" class="relative">
+                    <button @click="open = !open" class="flex items-center space-x-2 p-2 rounded-full hover:bg-agri-cream text-agri-brown-darker hover:text-agri-brown transition-colors">
+                        <div class="w-8 h-8 rounded-full bg-agri-brown flex items-center justify-center text-white font-bold">
+                            {{ user.username.0|upper }}
+                        </div>
+                    </button>
+                    <div x-show="open" @click.away="open = false" class="absolute right-0 mt-2 w-48 bg-white rounded-lg shadow-xl py-1 z-10 border border-gray-200">
+                        <div class="p-3 border-b">
+                            <p class="font-semibold text-agri-brown-darker">{{ user.username }}</p>
+                            <p class="text-xs text-agri-brown">Buyer Account</p>
+                        </div>
+                        <form method="post" action="{% url 'logout' %}">
+                            {% csrf_token %}
+                            <button type="submit" class="block w-full text-left px-4 py-2 text-agri-brown-darker hover:bg-agri-cream transition-colors">
+                                <div class="flex items-center">
+                                    <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1" />
+                                    </svg>
+                                    Logout
+                                </div>
+                            </button>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Dashboard Content -->
+        <div class="flex-1 overflow-y-auto p-6">
+            {% block dashboard_content %}{% endblock %}
+        </div>
+
+        <!-- Add date and time script -->
+        <script>
+            function updateDateTime() {
+                const dateElement = document.getElementById('current-date');
+                const timeElement = document.getElementById('current-time');
+
+                if (dateElement && timeElement) {
+                    const now = new Date();
+                    const options = { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' };
+
+                    dateElement.textContent = now.toLocaleDateString('en-US', options);
+                    timeElement.textContent = now.toLocaleTimeString('en-US');
+                }
+            }
+
+            // Update immediately and then every second
+            updateDateTime();
+            setInterval(updateDateTime, 1000);
+        </script>
+    </div>
+</div>
+
+<!-- Messages -->
+{% if messages %}
+<div class="fixed top-4 right-4 z-50 w-80">
+    {% for message in messages %}
+        <div class="p-4 mb-4 rounded-md {% if message.tags == 'success' %}bg-green-100 text-green-700{% elif message.tags == 'error' %}bg-red-100 text-red-700{% else %}bg-agri-cream text-agri-brown-dark{% endif %} shadow-lg animate-fadeIn"
+             x-data="{ show: true }" x-show="show" x-init="setTimeout(() => show = false, 5000)">
+            <div class="flex justify-between items-center">
+                <p>{{ message }}</p>
+                <button @click="show = false" class="text-agri-brown hover:text-agri-brown-darker">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+                    </svg>
+                </button>
+            </div>
+        </div>
+    {% endfor %}
+</div>
+{% endif %}
+
+<!-- Cart Update Script for Add to Cart functionality -->
+<script>
+    document.body.addEventListener('htmx:afterRequest', function(event) {
+        // Check if the response has the cartUpdated trigger
+        if (event.detail.xhr.getResponseHeader('HX-Trigger') === 'cartUpdated') {
+            try {
+                // Parse the response to get the cart items count
+                const response = JSON.parse(event.detail.xhr.responseText);
+                // Update the cart count in the UI
+                const cartCount = response.cart_items || 0;
+
+                // Update all cart count elements
+                const cartCountElements = document.querySelectorAll('.cart-count');
+                cartCountElements.forEach(function(element) {
+                    element.textContent = cartCount;
+
+                    // Hide the count if it's zero
+                    if (cartCount === 0) {
+                        element.style.display = 'none';
+                    } else {
+                        element.style.display = 'flex';
+                    }
+                });
+
+                // Update specific cart count elements by ID
+                const cartCountIds = ['cart-count', 'nav-cart-count', 'sidebar-cart-count'];
+                cartCountIds.forEach(function(id) {
+                    const element = document.getElementById(id);
+                    if (element) {
+                        element.textContent = cartCount;
+
+                        // Hide the count if it's zero
+                        if (cartCount === 0) {
+                            element.style.display = 'none';
+                        } else {
+                            element.style.display = 'flex';
+                        }
+                    }
+                });
+
+                // We no longer need to reload the cart page as it's handled by the cart.html script
+                // The cart.html template now has its own script to update the cart table in real-time
+            } catch (error) {
+                console.error('Error updating cart count:', error);
+            }
+        }
+    });
+
+    // Custom notification system
+    window.addEventListener('show-notification', function(event) {
+        const message = event.detail.message;
+        const type = event.detail.type || 'success';
+
+        // Create notification container
+        const notificationContainer = document.createElement('div');
+        notificationContainer.className = 'fixed bottom-6 right-6 z-50';
+
+        // Create notification content
+        const notificationContent = document.createElement('div');
+        notificationContent.className = `flex items-center p-4 rounded-xl shadow-xl backdrop-blur-sm ${
+            type === 'success' ? 'bg-agri-brown/95 text-white' :
+            type === 'error' ? 'bg-red-600/95 text-white' :
+            type === 'warning' ? 'bg-yellow-500/95 text-white' :
+            'bg-blue-600/95 text-white'
+        }`;
+
+        // Create icon container
+        const iconContainer = document.createElement('div');
+        iconContainer.className = 'mr-3 flex-shrink-0';
+
+        // Add appropriate icon based on notification type
+        if (type === 'success') {
+            iconContainer.innerHTML = `<svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
+            </svg>`;
+        } else if (type === 'error') {
+            iconContainer.innerHTML = `<svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+            </svg>`;
+        } else if (type === 'warning') {
+            iconContainer.innerHTML = `<svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
+            </svg>`;
+        } else {
+            iconContainer.innerHTML = `<svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+            </svg>`;
+        }
+
+        // Create message container
+        const messageContainer = document.createElement('div');
+        messageContainer.className = 'flex-1';
+
+        // Create message element
+        const messageElement = document.createElement('p');
+        messageElement.className = 'font-medium';
+        messageElement.textContent = message;
+        messageContainer.appendChild(messageElement);
+
+        // Create close button
+        const closeButton = document.createElement('button');
+        closeButton.className = 'ml-4 flex-shrink-0 text-white hover:text-white/80 transition-colors';
+        closeButton.innerHTML = `<svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+        </svg>`;
+
+        // Add event listener to close button
+        closeButton.addEventListener('click', function() {
+            document.body.removeChild(notificationContainer);
+        });
+
+        // Assemble notification
+        notificationContent.appendChild(iconContainer);
+        notificationContent.appendChild(messageContainer);
+        notificationContent.appendChild(closeButton);
+        notificationContainer.appendChild(notificationContent);
+
+        // Add notification to the DOM
+        document.body.appendChild(notificationContainer);
+
+        // Add animation
+        notificationContainer.style.opacity = '0';
+        notificationContainer.style.transform = 'translateY(20px)';
+        notificationContainer.style.transition = 'opacity 0.3s ease-out, transform 0.3s ease-out';
+
+        // Trigger animation
+        setTimeout(function() {
+            notificationContainer.style.opacity = '1';
+            notificationContainer.style.transform = 'translateY(0)';
+        }, 10);
+
+        // Auto-remove after 5 seconds
+        setTimeout(function() {
+            if (document.body.contains(notificationContainer)) {
+                notificationContainer.style.opacity = '0';
+                notificationContainer.style.transform = 'translateY(20px)';
+
+                // Remove from DOM after animation completes
+                setTimeout(function() {
+                    if (document.body.contains(notificationContainer)) {
+                        document.body.removeChild(notificationContainer);
+                    }
+                }, 300);
+            }
+        }, 5000);
+    });
+</script>
+</body>
+</html>

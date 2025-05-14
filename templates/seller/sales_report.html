@@ -1,50 +1,75 @@
-{% extends 'base.html' %}
+{% extends 'seller/seller_base.html' %}
 {% load currency_filters %}
 
 {% block title %}Sales Report - AgriMarket{% endblock %}
 
-{% block content %}
-<div class="space-y-8">
-    <div class="flex justify-between items-center">
-        <h1 class="text-2xl font-bold">Sales Report</h1>
-        <a href="{% url 'seller_dashboard' %}" class="text-green-700 hover:underline">Back to Dashboard</a>
-    </div>
+{% block page_title %}Sales Report{% endblock %}
 
-    <!-- Report Filters -->
-    <div class="bg-white rounded-lg shadow-md overflow-hidden">
-        <div class="p-6 border-b">
-            <h2 class="text-xl font-semibold">Report Filters</h2>
+{% block dashboard_content %}
+<!-- Report Filters -->
+<div class="dashboard-card bg-white rounded-lg shadow-md overflow-hidden mb-8">
+    <div class="p-6 border-b border-agri-cream bg-agri-brown">
+        <div class="flex justify-between items-center">
+            <h2 class="text-xl font-semibold text-white flex items-center">
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 17v-2m3 2v-4m3 4v-6m2 10H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+                </svg>
+                Report Filters
+            </h2>
         </div>
+    </div>
         <div class="p-6">
             <form method="get" action="{% url 'sales_report' %}" class="space-y-4" id="reportForm">
                 <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
                     <div>
-                        <label for="id_report_period" class="block text-sm font-medium text-gray-700 mb-1">Report Period</label>
-                        {{ form.report_period }}
+                        <label for="id_report_period" class="block text-sm font-medium text-agri-brown-darker mb-1">Report Period</label>
+                        {{ form.report_period|safe|striptags|default:"" }}
+                        <select name="report_period" id="id_report_period" class="w-full px-4 py-2 border border-agri-brown/30 rounded-md focus:outline-none focus:ring-2 focus:ring-agri-brown focus:border-agri-brown">
+                            <option value="today" {% if form.report_period.value == 'today' %}selected{% endif %}>Today</option>
+                            <option value="yesterday" {% if form.report_period.value == 'yesterday' %}selected{% endif %}>Yesterday</option>
+                            <option value="this_week" {% if form.report_period.value == 'this_week' %}selected{% endif %}>This Week</option>
+                            <option value="last_week" {% if form.report_period.value == 'last_week' %}selected{% endif %}>Last Week</option>
+                            <option value="this_month" {% if form.report_period.value == 'this_month' %}selected{% endif %}>This Month</option>
+                            <option value="last_month" {% if form.report_period.value == 'last_month' %}selected{% endif %}>Last Month</option>
+                            <option value="this_year" {% if form.report_period.value == 'this_year' %}selected{% endif %}>This Year</option>
+                            <option value="all_time" {% if form.report_period.value == 'all_time' %}selected{% endif %}>All Time</option>
+                            <option value="custom" {% if form.report_period.value == 'custom' %}selected{% endif %}>Custom Range</option>
+                        </select>
                     </div>
                     <div>
-                        <label for="id_category" class="block text-sm font-medium text-gray-700 mb-1">Category</label>
-                        {{ form.category }}
+                        <label for="id_category" class="block text-sm font-medium text-agri-brown-darker mb-1">Category</label>
+                        {{ form.category|safe|striptags|default:"" }}
+                        <select name="category" id="id_category" class="w-full px-4 py-2 border border-agri-brown/30 rounded-md focus:outline-none focus:ring-2 focus:ring-agri-brown focus:border-agri-brown">
+                            <option value="" {% if not form.category.value %}selected{% endif %}>All Categories</option>
+                            <option value="livestock" {% if form.category.value == 'livestock' %}selected{% endif %}>Livestock</option>
+                            <option value="poultry" {% if form.category.value == 'poultry' %}selected{% endif %}>Poultry</option>
+                        </select>
                     </div>
                 </div>
 
                 <div class="grid grid-cols-1 md:grid-cols-2 gap-6" id="dateRangeFields" style="display: none;">
                     <div>
-                        <label for="id_start_date" class="block text-sm font-medium text-gray-700 mb-1">Start Date</label>
-                        {{ form.start_date }}
+                        <label for="id_start_date" class="block text-sm font-medium text-agri-brown-darker mb-1">Start Date</label>
+                        <input type="date" name="start_date" id="id_start_date" value="{{ form.start_date.value|date:'Y-m-d' }}" class="w-full px-4 py-2 border border-agri-brown/30 rounded-md focus:outline-none focus:ring-2 focus:ring-agri-brown focus:border-agri-brown">
                     </div>
                     <div>
-                        <label for="id_end_date" class="block text-sm font-medium text-gray-700 mb-1">End Date</label>
-                        {{ form.end_date }}
+                        <label for="id_end_date" class="block text-sm font-medium text-agri-brown-darker mb-1">End Date</label>
+                        <input type="date" name="end_date" id="id_end_date" value="{{ form.end_date.value|date:'Y-m-d' }}" class="w-full px-4 py-2 border border-agri-brown/30 rounded-md focus:outline-none focus:ring-2 focus:ring-agri-brown focus:border-agri-brown">
                     </div>
                 </div>
 
                 <div class="flex justify-between items-center pt-4">
-                    <button type="submit" class="bg-green-700 text-white px-6 py-2 rounded-md hover:bg-green-800 transition">
+                    <button type="submit" class="bg-agri-brown text-white px-6 py-3 rounded-md hover:bg-agri-brown-dark transition-colors flex items-center">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 17v-2m3 2v-4m3 4v-6m2 10H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+                        </svg>
                         Generate Report
                     </button>
                     {% if sales %}
-                    <a href="{% url 'generate_sales_pdf' %}?{{ request.GET.urlencode }}" class="bg-gray-700 text-white px-6 py-2 rounded-md hover:bg-gray-800 transition">
+                    <a href="{% url 'generate_sales_pdf' %}?{{ request.GET.urlencode }}" class="bg-agri-brown-dark text-white px-6 py-3 rounded-md hover:bg-agri-brown-darker transition-colors flex items-center">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+                        </svg>
                         Download PDF
                     </a>
                     {% endif %}
@@ -55,33 +80,55 @@
 
     {% if sales %}
     <!-- Report Summary -->
-    <div class="bg-white rounded-lg shadow-md overflow-hidden">
-        <div class="p-6 border-b">
-            <h2 class="text-xl font-semibold">Report Summary</h2>
-            <p class="text-sm text-gray-500 mt-1">
-                {% if start_date == end_date %}
-                For {{ start_date|date:"F d, Y" }}
-                {% else %}
-                From {{ start_date|date:"F d, Y" }} to {{ end_date|date:"F d, Y" }}
-                {% endif %}
-                {% if selected_category %}
-                - Category: {{ selected_category_display }}
-                {% endif %}
-            </p>
+    <div class="dashboard-card bg-white rounded-lg shadow-md overflow-hidden mb-8">
+        <div class="p-6 border-b border-agri-cream bg-agri-brown">
+            <div class="flex justify-between items-center">
+                <h2 class="text-xl font-semibold text-white flex items-center">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z" />
+                    </svg>
+                    Report Summary
+                </h2>
+                <span class="bg-agri-cream text-agri-brown-darker text-xs font-semibold px-3 py-1 rounded-full">
+                    {% if start_date == end_date %}
+                    {{ start_date|date:"F d, Y" }}
+                    {% else %}
+                    {{ start_date|date:"M d, Y" }} - {{ end_date|date:"M d, Y" }}
+                    {% endif %}
+                    {% if selected_category %}
+                    | {{ selected_category_display }}
+                    {% endif %}
+                </span>
+            </div>
         </div>
         <div class="p-6">
             <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
-                <div class="bg-gray-50 p-4 rounded-lg">
-                    <h3 class="text-lg font-semibold mb-2">Total Sales</h3>
-                    <p class="text-3xl font-bold text-green-700">{{ sales.count }}</p>
+                <div class="dashboard-card bg-agri-cream/30 p-6 rounded-lg border-l-4 border-agri-brown transform transition-all duration-300 hover:shadow-lg hover:-translate-y-1">
+                    <div class="flex items-center mb-2">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 text-agri-brown mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2" />
+                        </svg>
+                        <h3 class="text-lg font-semibold text-agri-brown-darker">Total Sales</h3>
+                    </div>
+                    <p class="text-3xl font-bold text-agri-brown">{{ sales.count }}</p>
                 </div>
-                <div class="bg-gray-50 p-4 rounded-lg">
-                    <h3 class="text-lg font-semibold mb-2">Total Revenue</h3>
-                    <p class="text-3xl font-bold text-green-700">{{ total_revenue|currency }}</p>
+                <div class="dashboard-card bg-agri-cream/30 p-6 rounded-lg border-l-4 border-agri-brown transform transition-all duration-300 hover:shadow-lg hover:-translate-y-1">
+                    <div class="flex items-center mb-2">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 text-agri-brown mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                        </svg>
+                        <h3 class="text-lg font-semibold text-agri-brown-darker">Total Revenue</h3>
+                    </div>
+                    <p class="text-3xl font-bold text-agri-brown">{{ total_revenue|currency }}</p>
                 </div>
-                <div class="bg-gray-50 p-4 rounded-lg">
-                    <h3 class="text-lg font-semibold mb-2">Total Items Sold</h3>
-                    <p class="text-3xl font-bold text-green-700">{{ total_quantity }}</p>
+                <div class="dashboard-card bg-agri-cream/30 p-6 rounded-lg border-l-4 border-agri-brown transform transition-all duration-300 hover:shadow-lg hover:-translate-y-1">
+                    <div class="flex items-center mb-2">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 text-agri-brown mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4" />
+                        </svg>
+                        <h3 class="text-lg font-semibold text-agri-brown-darker">Total Items Sold</h3>
+                    </div>
+                    <p class="text-3xl font-bold text-agri-brown">{{ total_quantity }}</p>
                 </div>
             </div>
         </div>
@@ -89,23 +136,43 @@
 
     <!-- Sales by Category -->
     {% if category_data %}
-    <div class="bg-white rounded-lg shadow-md overflow-hidden">
-        <div class="p-6 border-b">
-            <h2 class="text-xl font-semibold">Sales by Category</h2>
+    <div class="dashboard-card bg-white rounded-lg shadow-md overflow-hidden mb-8">
+        <div class="p-6 border-b border-agri-cream bg-agri-brown">
+            <div class="flex justify-between items-center">
+                <h2 class="text-xl font-semibold text-white flex items-center">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 21a4 4 0 01-4-4V5a2 2 0 012-2h4a2 2 0 012 2v12a4 4 0 01-4 4zm0 0h12a2 2 0 002-2v-4a2 2 0 00-2-2h-2.343M11 7.343l1.657-1.657a2 2 0 012.828 0l2.829 2.829a2 2 0 010 2.828l-8.486 8.485M7 17h.01" />
+                    </svg>
+                    Sales by Category
+                </h2>
+            </div>
         </div>
         <div class="p-6">
             <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
                 {% for category, data in category_data.items %}
-                <div class="bg-gray-50 p-4 rounded-lg">
-                    <h3 class="text-lg font-semibold mb-2">{{ category }}</h3>
-                    <div class="grid grid-cols-2 gap-4">
-                        <div>
-                            <p class="text-sm text-gray-500">Sales Count</p>
-                            <p class="text-xl font-bold">{{ data.count }}</p>
+                <div class="bg-agri-cream/20 p-6 rounded-lg border border-agri-cream shadow-sm hover:shadow-md transition-shadow">
+                    <div class="flex items-center mb-4">
+                        <div class="w-10 h-10 rounded-full bg-agri-brown flex items-center justify-center text-white mr-3">
+                            {% if category == 'Livestock' %}
+                            <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 4v12l-4-2-4 2V4M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" />
+                            </svg>
+                            {% else %}
+                            <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 7v10a2 2 0 002 2h14a2 2 0 002-2V9a2 2 0 00-2-2h-6l-2-2H5a2 2 0 00-2 2z" />
+                            </svg>
+                            {% endif %}
                         </div>
-                        <div>
-                            <p class="text-sm text-gray-500">Revenue</p>
-                            <p class="text-xl font-bold">{{ data.revenue|currency }}</p>
+                        <h3 class="text-lg font-semibold text-agri-brown-darker">{{ category }}</h3>
+                    </div>
+                    <div class="grid grid-cols-2 gap-4">
+                        <div class="bg-white p-3 rounded-md shadow-sm">
+                            <p class="text-sm text-agri-brown mb-1">Sales Count</p>
+                            <p class="text-xl font-bold text-agri-brown-darker">{{ data.count }}</p>
+                        </div>
+                        <div class="bg-white p-3 rounded-md shadow-sm">
+                            <p class="text-sm text-agri-brown mb-1">Revenue</p>
+                            <p class="text-xl font-bold text-agri-brown-darker">{{ data.revenue|currency }}</p>
                         </div>
                     </div>
                 </div>
@@ -116,59 +183,69 @@
     {% endif %}
 
     <!-- Detailed Sales Table -->
-    <div class="bg-white rounded-lg shadow-md overflow-hidden">
-        <div class="p-6 border-b">
-            <h2 class="text-xl font-semibold">Detailed Sales</h2>
+    <div class="dashboard-card bg-white rounded-lg shadow-md overflow-hidden">
+        <div class="p-6 border-b border-agri-cream bg-agri-brown">
+            <div class="flex justify-between items-center">
+                <h2 class="text-xl font-semibold text-white flex items-center">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 10h18M3 14h18m-9-4v8m-7 0h14a2 2 0 002-2V8a2 2 0 00-2-2H5a2 2 0 00-2 2v8a2 2 0 002 2z" />
+                    </svg>
+                    Detailed Sales
+                </h2>
+                <span class="bg-agri-cream text-agri-brown-darker text-xs font-semibold px-3 py-1 rounded-full">
+                    {{ sales.count }} Transactions
+                </span>
+            </div>
         </div>
         <div class="overflow-x-auto">
             <table class="w-full">
-                <thead class="bg-gray-50">
+                <thead class="bg-agri-cream">
                     <tr>
-                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Date</th>
-                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Item</th>
-                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Category</th>
-                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Buyer</th>
-                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Quantity</th>
-                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Price</th>
-                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Total</th>
+                        <th class="px-6 py-3 text-left text-xs font-medium text-agri-brown-darker uppercase tracking-wider">Date</th>
+                        <th class="px-6 py-3 text-left text-xs font-medium text-agri-brown-darker uppercase tracking-wider">Item</th>
+                        <th class="px-6 py-3 text-left text-xs font-medium text-agri-brown-darker uppercase tracking-wider">Category</th>
+                        <th class="px-6 py-3 text-left text-xs font-medium text-agri-brown-darker uppercase tracking-wider">Buyer</th>
+                        <th class="px-6 py-3 text-left text-xs font-medium text-agri-brown-darker uppercase tracking-wider">Quantity</th>
+                        <th class="px-6 py-3 text-left text-xs font-medium text-agri-brown-darker uppercase tracking-wider">Price</th>
+                        <th class="px-6 py-3 text-left text-xs font-medium text-agri-brown-darker uppercase tracking-wider">Total</th>
                     </tr>
                 </thead>
-                <tbody class="divide-y divide-gray-200">
+                <tbody class="divide-y divide-agri-cream">
                     {% for sale in sales %}
-                    <tr>
+                    <tr class="hover:bg-agri-cream/20 transition-colors">
                         <td class="px-6 py-4 whitespace-nowrap">
-                            <div class="text-sm text-gray-900">{{ sale.sold_at|date:"M d, Y" }}</div>
+                            <div class="text-sm font-medium text-agri-brown-darker">{{ sale.sold_at|date:"M d, Y" }}</div>
                         </td>
                         <td class="px-6 py-4 whitespace-nowrap">
-                            <div class="text-sm font-medium text-gray-900">{{ sale.item.name }}</div>
+                            <div class="text-sm font-medium text-agri-brown-darker">{{ sale.item.name }}</div>
                         </td>
                         <td class="px-6 py-4 whitespace-nowrap">
-                            <div class="text-sm text-gray-500">{{ sale.item.get_category_display }}</div>
+                            <div class="text-sm text-agri-brown">{{ sale.item.get_category_display }}</div>
                         </td>
                         <td class="px-6 py-4 whitespace-nowrap">
-                            <div class="text-sm text-gray-500">{{ sale.buyer.username }}</div>
+                            <div class="text-sm text-agri-brown">{{ sale.buyer.username }}</div>
                         </td>
                         <td class="px-6 py-4 whitespace-nowrap">
-                            <div class="text-sm text-gray-900">{{ sale.quantity }}</div>
+                            <div class="text-sm text-agri-brown-darker">{{ sale.quantity }}</div>
                         </td>
                         <td class="px-6 py-4 whitespace-nowrap">
-                            <div class="text-sm text-gray-900">{{ sale.item.price|currency }}</div>
+                            <div class="text-sm text-agri-brown-darker">{{ sale.item.price|currency }}</div>
                         </td>
                         <td class="px-6 py-4 whitespace-nowrap">
-                            <div class="text-sm text-gray-900">{{ sale.total_price|currency }}</div>
+                            <div class="text-sm font-medium text-agri-brown-darker">{{ sale.total_price|currency }}</div>
                         </td>
                     </tr>
                     {% endfor %}
                 </tbody>
-                <tfoot class="bg-gray-50">
+                <tfoot class="bg-agri-cream/50">
                     <tr>
-                        <td colspan="4" class="px-6 py-4 text-right font-medium">Totals:</td>
+                        <td colspan="4" class="px-6 py-4 text-right font-medium text-agri-brown-darker">Totals:</td>
                         <td class="px-6 py-4 whitespace-nowrap">
-                            <div class="text-sm font-bold">{{ total_quantity }}</div>
+                            <div class="text-sm font-bold text-agri-brown-darker">{{ total_quantity }}</div>
                         </td>
                         <td class="px-6 py-4 whitespace-nowrap"></td>
                         <td class="px-6 py-4 whitespace-nowrap">
-                            <div class="text-sm font-bold">{{ total_revenue|currency }}</div>
+                            <div class="text-sm font-bold text-agri-brown-darker">{{ total_revenue|currency }}</div>
                         </td>
                     </tr>
                 </tfoot>
@@ -176,8 +253,12 @@
         </div>
     </div>
     {% elif form.is_bound %}
-    <div class="bg-white rounded-lg shadow-md p-6 text-center">
-        <p class="text-gray-500">No sales data found for the selected criteria.</p>
+    <div class="bg-white rounded-lg shadow-md p-12 text-center">
+        <svg xmlns="http://www.w3.org/2000/svg" class="h-16 w-16 mx-auto text-agri-cream mb-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 17v-2m3 2v-4m3 4v-6m2 10H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+        </svg>
+        <p class="text-agri-brown-darker mb-4">No sales data found for the selected criteria.</p>
+        <p class="text-agri-brown">Try adjusting your filters to see more results.</p>
     </div>
     {% endif %}
 </div>
@@ -200,6 +281,21 @@
 
         // Toggle on change
         reportPeriodSelect.addEventListener('change', toggleDateFields);
+
+        // Add entrance animations to dashboard cards
+        const cards = document.querySelectorAll('.dashboard-card');
+
+        cards.forEach((card, index) => {
+            // Add a staggered entrance animation
+            card.style.opacity = '0';
+            card.style.transform = 'translateY(20px)';
+
+            setTimeout(() => {
+                card.style.transition = 'opacity 0.5s ease, transform 0.5s ease';
+                card.style.opacity = '1';
+                card.style.transform = 'translateY(0)';
+            }, 100 * index);
+        });
     });
 </script>
 {% endblock %}

@@ -1,6 +1,6 @@
 from django.contrib import admin
 from django.contrib.auth.admin import UserAdmin
-from .models import User, Item, Cart, CartItem, Payment, Sale
+from .models import User, Item, Cart, CartItem, Payment, Sale, Notification
 
 # Customize the User admin
 class CustomUserAdmin(UserAdmin):
@@ -22,3 +22,4 @@ admin.site.register(Cart)
 admin.site.register(CartItem)
 admin.site.register(Payment)
 admin.site.register(Sale)
+admin.site.register(Notification)
