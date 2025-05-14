@@ -1,0 +1,111 @@
+{% extends 'base.html' %}
+{% load currency_filters %}
+
+{% block content %}
+<div class="space-y-8">
+    <!-- Hero Section -->
+    <section class="bg-agri-brown text-white rounded-lg p-8 shadow-md">
+        <div class="flex flex-col md:flex-row items-center">
+            <div class="md:w-1/2 mb-6 md:mb-0">
+                <h1 class="text-4xl font-bold mb-4">Welcome to AgriMarket</h1>
+                <p class="text-xl mb-6">Your one-stop marketplace for livestock and poultry.</p>
+                <div class="flex space-x-4">
+                    <a href="{% url 'browse_items' %}" class="bg-white text-agri-brown px-6 py-3 rounded-md font-semibold hover:bg-agri-cream transition">Browse Items</a>
+                    {% if not user.is_authenticated %}
+                    <a href="{% url 'register' %}" class="bg-transparent border-2 border-white px-6 py-3 rounded-md font-semibold hover:bg-white hover:text-agri-brown transition">Register Now</a>
+                    {% endif %}
+                </div>
+            </div>
+            <div class="md:w-1/2">
+                <img src="https://images.unsplash.com/photo-1516467508483-a7212febe31a?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxzZWFyY2h8M3x8ZmFybXxlbnwwfHwwfHx8MA%3D%3D&auto=format&fit=crop&w=500&q=60" alt="Farm" class="rounded-lg shadow-lg w-full">
+            </div>
+        </div>
+    </section>
+
+    <!-- Categories Section -->
+    <section>
+        <h2 class="text-2xl font-bold mb-6 text-agri-brown-darker">Browse by Category</h2>
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+            <a href="{% url 'browse_items' %}?category=livestock" class="bg-white rounded-lg shadow-md overflow-hidden hover:shadow-lg transition">
+                <div class="h-48 bg-cover bg-center" style="background-image: url('https://images.unsplash.com/photo-1570042225831-d98fa7577f1e?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxzZWFyY2h8NHx8Y293fGVufDB8fDB8fHww&auto=format&fit=crop&w=500&q=60')"></div>
+                <div class="p-6">
+                    <h3 class="text-xl font-semibold mb-2 text-agri-brown">Livestock</h3>
+                    <p class="text-agri-brown-darker">Browse cattle, goats, sheep, and more</p>
+                </div>
+            </a>
+            <a href="{% url 'browse_items' %}?category=poultry" class="bg-white rounded-lg shadow-md overflow-hidden hover:shadow-lg transition">
+                <div class="h-48 bg-cover bg-center" style="background-image: url('https://images.unsplash.com/photo-1548550023-2bdb3c5beed7?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxzZWFyY2h8Mnx8Y2hpY2tlbnxlbnwwfHwwfHx8MA%3D%3D&auto=format&fit=crop&w=500&q=60')"></div>
+                <div class="p-6">
+                    <h3 class="text-xl font-semibold mb-2 text-agri-brown">Poultry</h3>
+                    <p class="text-agri-brown-darker">Browse chickens, ducks, turkeys, and more</p>
+                </div>
+            </a>
+        </div>
+    </section>
+
+    <!-- Featured Items Section -->
+    {% if items %}
+    <section>
+        <h2 class="text-2xl font-bold mb-6 text-agri-brown-darker">Featured Items</h2>
+        <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
+            {% for item in items %}
+            <div class="bg-white rounded-lg shadow-md overflow-hidden hover:shadow-lg transition">
+                {% if item.image %}
+                <img src="{{ item.image.url }}" alt="{{ item.name }}" class="w-full h-48 object-cover">
+                {% else %}
+                <div class="w-full h-48 bg-agri-cream flex items-center justify-center">
+                    <span class="text-agri-brown">No image</span>
+                </div>
+                {% endif %}
+                <div class="p-4">
+                    <h3 class="text-lg font-semibold mb-2 text-agri-brown-dark">{{ item.name }}</h3>
+                    <p class="text-agri-brown-darker mb-2">{{ item.description|truncatechars:100 }}</p>
+                    <div class="flex justify-between items-center">
+                        <span class="text-agri-brown font-bold">{{ item.price|currency }}</span>
+                        <a href="{% url 'item_detail' item.id %}" class="bg-agri-brown text-white px-4 py-2 rounded-md hover:bg-agri-brown-dark transition">View</a>
+                    </div>
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+        <div class="mt-6 text-center">
+            <a href="{% url 'browse_items' %}" class="text-agri-brown font-semibold hover:underline">View All Items</a>
+        </div>
+    </section>
+    {% endif %}
+
+    <!-- How It Works Section -->
+    <section class="bg-white rounded-lg p-8 shadow-md">
+        <h2 class="text-2xl font-bold mb-6 text-center text-agri-brown-darker">How It Works</h2>
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
+            <div class="text-center">
+                <div class="bg-agri-cream text-agri-brown rounded-full w-16 h-16 flex items-center justify-center mx-auto mb-4">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-8 w-8" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
+                    </svg>
+                </div>
+                <h3 class="text-xl font-semibold mb-2 text-agri-brown">1. Create an Account</h3>
+                <p class="text-agri-brown-darker">Register as a buyer or seller to get started.</p>
+            </div>
+            <div class="text-center">
+                <div class="bg-agri-cream text-agri-brown rounded-full w-16 h-16 flex items-center justify-center mx-auto mb-4">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-8 w-8" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 3h2l.4 2M7 13h10l4-8H5.4M7 13L5.4 5M7 13l-2.293 2.293c-.63.63-.184 1.707.707 1.707H17m0 0a2 2 0 100 4 2 2 0 000-4zm-8 2a2 2 0 11-4 0 2 2 0 014 0z" />
+                    </svg>
+                </div>
+                <h3 class="text-xl font-semibold mb-2 text-agri-brown">2. Browse & Purchase</h3>
+                <p class="text-agri-brown-darker">Find livestock or poultry and add to your cart.</p>
+            </div>
+            <div class="text-center">
+                <div class="bg-agri-cream text-agri-brown rounded-full w-16 h-16 flex items-center justify-center mx-auto mb-4">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-8 w-8" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
+                    </svg>
+                </div>
+                <h3 class="text-xl font-semibold mb-2 text-agri-brown">3. Complete Payment</h3>
+                <p class="text-agri-brown-darker">Pay via GCash and upload proof of payment.</p>
+            </div>
+        </div>
+    </section>
+</div>
+{% endblock %}

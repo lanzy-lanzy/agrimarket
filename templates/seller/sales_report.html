@@ -1,0 +1,205 @@
+{% extends 'base.html' %}
+{% load currency_filters %}
+
+{% block title %}Sales Report - AgriMarket{% endblock %}
+
+{% block content %}
+<div class="space-y-8">
+    <div class="flex justify-between items-center">
+        <h1 class="text-2xl font-bold">Sales Report</h1>
+        <a href="{% url 'seller_dashboard' %}" class="text-green-700 hover:underline">Back to Dashboard</a>
+    </div>
+
+    <!-- Report Filters -->
+    <div class="bg-white rounded-lg shadow-md overflow-hidden">
+        <div class="p-6 border-b">
+            <h2 class="text-xl font-semibold">Report Filters</h2>
+        </div>
+        <div class="p-6">
+            <form method="get" action="{% url 'sales_report' %}" class="space-y-4" id="reportForm">
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <div>
+                        <label for="id_report_period" class="block text-sm font-medium text-gray-700 mb-1">Report Period</label>
+                        {{ form.report_period }}
+                    </div>
+                    <div>
+                        <label for="id_category" class="block text-sm font-medium text-gray-700 mb-1">Category</label>
+                        {{ form.category }}
+                    </div>
+                </div>
+
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-6" id="dateRangeFields" style="display: none;">
+                    <div>
+                        <label for="id_start_date" class="block text-sm font-medium text-gray-700 mb-1">Start Date</label>
+                        {{ form.start_date }}
+                    </div>
+                    <div>
+                        <label for="id_end_date" class="block text-sm font-medium text-gray-700 mb-1">End Date</label>
+                        {{ form.end_date }}
+                    </div>
+                </div>
+
+                <div class="flex justify-between items-center pt-4">
+                    <button type="submit" class="bg-green-700 text-white px-6 py-2 rounded-md hover:bg-green-800 transition">
+                        Generate Report
+                    </button>
+                    {% if sales %}
+                    <a href="{% url 'generate_sales_pdf' %}?{{ request.GET.urlencode }}" class="bg-gray-700 text-white px-6 py-2 rounded-md hover:bg-gray-800 transition">
+                        Download PDF
+                    </a>
+                    {% endif %}
+                </div>
+            </form>
+        </div>
+    </div>
+
+    {% if sales %}
+    <!-- Report Summary -->
+    <div class="bg-white rounded-lg shadow-md overflow-hidden">
+        <div class="p-6 border-b">
+            <h2 class="text-xl font-semibold">Report Summary</h2>
+            <p class="text-sm text-gray-500 mt-1">
+                {% if start_date == end_date %}
+                For {{ start_date|date:"F d, Y" }}
+                {% else %}
+                From {{ start_date|date:"F d, Y" }} to {{ end_date|date:"F d, Y" }}
+                {% endif %}
+                {% if selected_category %}
+                - Category: {{ selected_category_display }}
+                {% endif %}
+            </p>
+        </div>
+        <div class="p-6">
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+                <div class="bg-gray-50 p-4 rounded-lg">
+                    <h3 class="text-lg font-semibold mb-2">Total Sales</h3>
+                    <p class="text-3xl font-bold text-green-700">{{ sales.count }}</p>
+                </div>
+                <div class="bg-gray-50 p-4 rounded-lg">
+                    <h3 class="text-lg font-semibold mb-2">Total Revenue</h3>
+                    <p class="text-3xl font-bold text-green-700">{{ total_revenue|currency }}</p>
+                </div>
+                <div class="bg-gray-50 p-4 rounded-lg">
+                    <h3 class="text-lg font-semibold mb-2">Total Items Sold</h3>
+                    <p class="text-3xl font-bold text-green-700">{{ total_quantity }}</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Sales by Category -->
+    {% if category_data %}
+    <div class="bg-white rounded-lg shadow-md overflow-hidden">
+        <div class="p-6 border-b">
+            <h2 class="text-xl font-semibold">Sales by Category</h2>
+        </div>
+        <div class="p-6">
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                {% for category, data in category_data.items %}
+                <div class="bg-gray-50 p-4 rounded-lg">
+                    <h3 class="text-lg font-semibold mb-2">{{ category }}</h3>
+                    <div class="grid grid-cols-2 gap-4">
+                        <div>
+                            <p class="text-sm text-gray-500">Sales Count</p>
+                            <p class="text-xl font-bold">{{ data.count }}</p>
+                        </div>
+                        <div>
+                            <p class="text-sm text-gray-500">Revenue</p>
+                            <p class="text-xl font-bold">{{ data.revenue|currency }}</p>
+                        </div>
+                    </div>
+                </div>
+                {% endfor %}
+            </div>
+        </div>
+    </div>
+    {% endif %}
+
+    <!-- Detailed Sales Table -->
+    <div class="bg-white rounded-lg shadow-md overflow-hidden">
+        <div class="p-6 border-b">
+            <h2 class="text-xl font-semibold">Detailed Sales</h2>
+        </div>
+        <div class="overflow-x-auto">
+            <table class="w-full">
+                <thead class="bg-gray-50">
+                    <tr>
+                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Date</th>
+                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Item</th>
+                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Category</th>
+                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Buyer</th>
+                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Quantity</th>
+                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Price</th>
+                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Total</th>
+                    </tr>
+                </thead>
+                <tbody class="divide-y divide-gray-200">
+                    {% for sale in sales %}
+                    <tr>
+                        <td class="px-6 py-4 whitespace-nowrap">
+                            <div class="text-sm text-gray-900">{{ sale.sold_at|date:"M d, Y" }}</div>
+                        </td>
+                        <td class="px-6 py-4 whitespace-nowrap">
+                            <div class="text-sm font-medium text-gray-900">{{ sale.item.name }}</div>
+                        </td>
+                        <td class="px-6 py-4 whitespace-nowrap">
+                            <div class="text-sm text-gray-500">{{ sale.item.get_category_display }}</div>
+                        </td>
+                        <td class="px-6 py-4 whitespace-nowrap">
+                            <div class="text-sm text-gray-500">{{ sale.buyer.username }}</div>
+                        </td>
+                        <td class="px-6 py-4 whitespace-nowrap">
+                            <div class="text-sm text-gray-900">{{ sale.quantity }}</div>
+                        </td>
+                        <td class="px-6 py-4 whitespace-nowrap">
+                            <div class="text-sm text-gray-900">{{ sale.item.price|currency }}</div>
+                        </td>
+                        <td class="px-6 py-4 whitespace-nowrap">
+                            <div class="text-sm text-gray-900">{{ sale.total_price|currency }}</div>
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+                <tfoot class="bg-gray-50">
+                    <tr>
+                        <td colspan="4" class="px-6 py-4 text-right font-medium">Totals:</td>
+                        <td class="px-6 py-4 whitespace-nowrap">
+                            <div class="text-sm font-bold">{{ total_quantity }}</div>
+                        </td>
+                        <td class="px-6 py-4 whitespace-nowrap"></td>
+                        <td class="px-6 py-4 whitespace-nowrap">
+                            <div class="text-sm font-bold">{{ total_revenue|currency }}</div>
+                        </td>
+                    </tr>
+                </tfoot>
+            </table>
+        </div>
+    </div>
+    {% elif form.is_bound %}
+    <div class="bg-white rounded-lg shadow-md p-6 text-center">
+        <p class="text-gray-500">No sales data found for the selected criteria.</p>
+    </div>
+    {% endif %}
+</div>
+
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        const reportPeriodSelect = document.getElementById('id_report_period');
+        const dateRangeFields = document.getElementById('dateRangeFields');
+
+        function toggleDateFields() {
+            if (reportPeriodSelect.value === 'custom') {
+                dateRangeFields.style.display = 'grid';
+            } else {
+                dateRangeFields.style.display = 'none';
+            }
+        }
+
+        // Initial toggle
+        toggleDateFields();
+
+        // Toggle on change
+        reportPeriodSelect.addEventListener('change', toggleDateFields);
+    });
+</script>
+{% endblock %}

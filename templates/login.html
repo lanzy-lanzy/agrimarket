@@ -1,0 +1,37 @@
+{% extends 'base.html' %}
+
+{% block title %}Login - AgriMarket{% endblock %}
+
+{% block content %}
+<div class="max-w-md mx-auto bg-white rounded-lg shadow-md p-8">
+    <h1 class="text-2xl font-bold mb-6 text-center text-agri-brown-darker">Login to Your Account</h1>
+
+    <form method="post" class="space-y-4">
+        {% csrf_token %}
+
+        {% if form.errors %}
+        <div class="bg-red-100 text-red-700 p-4 rounded-md mb-4">
+            <p>Your username and password didn't match. Please try again.</p>
+        </div>
+        {% endif %}
+
+        <div>
+            <label for="id_username" class="block text-agri-brown-darker mb-2">Username</label>
+            <input type="text" name="username" id="id_username" class="w-full px-4 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-agri-brown" required>
+        </div>
+
+        <div>
+            <label for="id_password" class="block text-agri-brown-darker mb-2">Password</label>
+            <input type="password" name="password" id="id_password" class="w-full px-4 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-agri-brown" required>
+        </div>
+
+        <div>
+            <button type="submit" class="w-full bg-agri-brown text-white py-2 px-4 rounded-md hover:bg-agri-brown-dark transition">Login</button>
+        </div>
+    </form>
+
+    <div class="mt-6 text-center">
+        <p class="text-agri-brown-darker">Don't have an account? <a href="{% url 'register' %}" class="text-agri-brown hover:underline">Register here</a></p>
+    </div>
+</div>
+{% endblock %}

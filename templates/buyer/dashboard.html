@@ -1,0 +1,149 @@
+{% extends 'base.html' %}
+{% load currency_filters %}
+
+{% block title %}Buyer Dashboard - AgriMarket{% endblock %}
+
+{% block content %}
+<div class="space-y-8">
+    <div class="flex justify-between items-center">
+        <h1 class="text-2xl font-bold">Buyer Dashboard</h1>
+        <a href="{% url 'browse_items' %}" class="bg-green-700 text-white px-4 py-2 rounded-md hover:bg-green-800 transition">Browse Items</a>
+    </div>
+
+    <!-- Quick Stats -->
+    <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+        <div class="bg-white p-6 rounded-lg shadow-md">
+            <h2 class="text-lg font-semibold mb-2">Items in Cart</h2>
+            <p class="text-3xl font-bold text-green-700">{{ cart.items.count }}</p>
+            {% if cart.items.count > 0 %}
+            <a href="{% url 'view_cart' %}" class="text-green-700 hover:underline text-sm">View Cart</a>
+            {% endif %}
+        </div>
+        <div class="bg-white p-6 rounded-lg shadow-md">
+            <h2 class="text-lg font-semibold mb-2">Completed Orders</h2>
+            <p class="text-3xl font-bold text-green-700">{{ payments.count }}</p>
+        </div>
+    </div>
+
+    <!-- Order History -->
+    <div class="bg-white rounded-lg shadow-md overflow-hidden">
+        <div class="p-6 border-b">
+            <h2 class="text-xl font-semibold">Order History</h2>
+        </div>
+
+        {% if payments %}
+        <div class="overflow-x-auto">
+            <table class="w-full">
+                <thead class="bg-gray-50">
+                    <tr>
+                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Order Date</th>
+                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">GCash Reference</th>
+                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Total</th>
+                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Status</th>
+                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Details</th>
+                    </tr>
+                </thead>
+                <tbody class="divide-y divide-gray-200">
+                    {% for payment in payments %}
+                    <tr>
+                        <td class="px-6 py-4 whitespace-nowrap">
+                            <div class="text-sm text-gray-900">{{ payment.paid_at|date:"M d, Y" }}</div>
+                        </td>
+                        <td class="px-6 py-4 whitespace-nowrap">
+                            <div class="text-sm text-gray-900">{{ payment.gcash_reference }}</div>
+                        </td>
+                        <td class="px-6 py-4 whitespace-nowrap">
+                            <div class="text-sm text-gray-900">{{ payment.cart.total_price|currency }}</div>
+                        </td>
+                        <td class="px-6 py-4 whitespace-nowrap">
+                            {% if payment.status == 'approved' %}
+                            <span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-green-100 text-green-800">Approved</span>
+                            {% elif payment.status == 'rejected' %}
+                            <span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-red-100 text-red-800">Rejected</span>
+                            {% else %}
+                            <span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-yellow-100 text-yellow-800">Pending</span>
+                            {% endif %}
+                        </td>
+                        <td class="px-6 py-4 whitespace-nowrap">
+                            <button class="text-indigo-600 hover:text-indigo-900"
+                                    x-data="{}"
+                                    @click="$dispatch('open-modal', 'order-{{ payment.id }}')">
+                                View Details
+                            </button>
+
+                            <!-- Modal -->
+                            <div x-data="{ open: false }"
+                                 @open-modal.window="if ($event.detail == 'order-{{ payment.id }}') open = true"
+                                 @keydown.escape.window="open = false"
+                                 x-show="open"
+                                 class="fixed inset-0 z-50 overflow-y-auto"
+                                 x-cloak>
+                                <div class="flex items-center justify-center min-h-screen px-4">
+                                    <div class="fixed inset-0 bg-black opacity-30" @click="open = false"></div>
+                                    <div class="bg-white rounded-lg shadow-xl overflow-hidden z-10 max-w-2xl w-full">
+                                        <div class="px-6 py-4 border-b flex justify-between items-center">
+                                            <h3 class="text-lg font-semibold">Order Details</h3>
+                                            <button @click="open = false" class="text-gray-400 hover:text-gray-500">
+                                                <svg class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+                                                </svg>
+                                            </button>
+                                        </div>
+                                        <div class="p-6">
+                                            <div class="mb-4">
+                                                <h4 class="font-semibold mb-2">Order Items</h4>
+                                                <ul class="divide-y">
+                                                    {% for cart_item in payment.cart.items.all %}
+                                                    <li class="py-2 flex justify-between">
+                                                        <span>{{ cart_item.item.name }} x {{ cart_item.quantity }}</span>
+                                                        <span>{{ cart_item.total_price|currency }}</span>
+                                                    </li>
+                                                    {% endfor %}
+                                                </ul>
+                                            </div>
+                                            <div class="mb-4">
+                                                <h4 class="font-semibold mb-2">Payment Information</h4>
+                                                <p><strong>GCash Reference:</strong> {{ payment.gcash_reference }}</p>
+                                                <p><strong>Date:</strong> {{ payment.paid_at|date:"F d, Y H:i" }}</p>
+                                                <p><strong>Status:</strong>
+                                                    {% if payment.status == 'approved' %}
+                                                    <span class="text-green-600">Approved</span>
+                                                    {% elif payment.status == 'rejected' %}
+                                                    <span class="text-red-600">Rejected</span>
+                                                    {% else %}
+                                                    <span class="text-yellow-600">Pending Approval</span>
+                                                    {% endif %}
+                                                </p>
+                                                {% if payment.approved_at %}
+                                                <p><strong>Approved on:</strong> {{ payment.approved_at|date:"F d, Y H:i" }}</p>
+                                                {% endif %}
+                                            </div>
+                                            <div>
+                                                <h4 class="font-semibold mb-2">Payment Proof</h4>
+                                                <img src="{{ payment.proof_screenshot.url }}" alt="Payment Proof" class="max-h-48 rounded border">
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+        {% else %}
+        <div class="p-6 text-center text-gray-500">
+            <p>You haven't placed any orders yet.</p>
+            <a href="{% url 'browse_items' %}" class="text-green-700 hover:underline">Browse items to get started</a>
+        </div>
+        {% endif %}
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_head %}
+<style>
+    [x-cloak] { display: none !important; }
+</style>
+{% endblock %}

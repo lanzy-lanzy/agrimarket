@@ -1,0 +1,128 @@
+{% extends 'base.html' %}
+{% load currency_filters %}
+
+{% block title %}Payment Details - AgriMarket{% endblock %}
+
+{% block content %}
+<div class="space-y-8">
+    <div class="flex justify-between items-center">
+        <h1 class="text-2xl font-bold">Payment Details</h1>
+        <a href="{% url 'pending_payments' %}" class="text-green-700 hover:underline">Back to Pending Payments</a>
+    </div>
+
+    <!-- Payment Information -->
+    <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+        <div class="bg-white rounded-lg shadow-md overflow-hidden">
+            <div class="p-6 border-b">
+                <h2 class="text-xl font-semibold">Payment Information</h2>
+            </div>
+            <div class="p-6 space-y-4">
+                <div class="grid grid-cols-2 gap-4">
+                    <div>
+                        <p class="text-sm text-gray-500">Buyer</p>
+                        <p class="font-medium">{{ payment.buyer.username }}</p>
+                    </div>
+                    <div>
+                        <p class="text-sm text-gray-500">Date</p>
+                        <p class="font-medium">{{ payment.paid_at|date:"F d, Y H:i" }}</p>
+                    </div>
+                    <div>
+                        <p class="text-sm text-gray-500">GCash Reference</p>
+                        <p class="font-medium">{{ payment.gcash_reference }}</p>
+                    </div>
+                    <div>
+                        <p class="text-sm text-gray-500">Status</p>
+                        <p class="font-medium">
+                            <span class="px-2 py-1 text-xs font-semibold rounded-full
+                                {% if payment.status == 'pending' %}bg-yellow-100 text-yellow-800
+                                {% elif payment.status == 'approved' %}bg-green-100 text-green-800
+                                {% else %}bg-red-100 text-red-800{% endif %}">
+                                {{ payment.get_status_display }}
+                            </span>
+                        </p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="bg-white rounded-lg shadow-md overflow-hidden">
+            <div class="p-6 border-b">
+                <h2 class="text-xl font-semibold">Payment Proof</h2>
+            </div>
+            <div class="p-6">
+                <img src="{{ payment.proof_screenshot.url }}" alt="Payment Proof" class="w-full h-auto rounded-md border">
+            </div>
+        </div>
+    </div>
+
+    <!-- Items in this payment -->
+    <div class="bg-white rounded-lg shadow-md overflow-hidden">
+        <div class="p-6 border-b">
+            <h2 class="text-xl font-semibold">Your Items in this Order</h2>
+        </div>
+
+        <div class="overflow-x-auto">
+            <table class="w-full">
+                <thead class="bg-gray-50">
+                    <tr>
+                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Item</th>
+                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Price</th>
+                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Quantity</th>
+                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Total</th>
+                    </tr>
+                </thead>
+                <tbody class="divide-y divide-gray-200">
+                    {% for cart_item in seller_items %}
+                    <tr>
+                        <td class="px-6 py-4 whitespace-nowrap">
+                            <div class="flex items-center">
+                                {% if cart_item.item.image %}
+                                <img src="{{ cart_item.item.image.url }}" alt="{{ cart_item.item.name }}" class="h-10 w-10 rounded-full mr-3 object-cover">
+                                {% else %}
+                                <div class="h-10 w-10 rounded-full bg-gray-200 mr-3 flex items-center justify-center">
+                                    <span class="text-xs text-gray-500">No img</span>
+                                </div>
+                                {% endif %}
+                                <div>
+                                    <div class="text-sm font-medium text-gray-900">{{ cart_item.item.name }}</div>
+                                    <div class="text-xs text-gray-500">{{ cart_item.item.get_category_display }}</div>
+                                </div>
+                            </div>
+                        </td>
+                        <td class="px-6 py-4 whitespace-nowrap">
+                            <div class="text-sm text-gray-900">{{ cart_item.item.price|currency }}</div>
+                        </td>
+                        <td class="px-6 py-4 whitespace-nowrap">
+                            <div class="text-sm text-gray-900">{{ cart_item.quantity }}</div>
+                        </td>
+                        <td class="px-6 py-4 whitespace-nowrap">
+                            <div class="text-sm font-medium text-gray-900">{{ cart_item.total_price|currency }}</div>
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+                <tfoot class="bg-gray-50">
+                    <tr>
+                        <td colspan="3" class="px-6 py-4 text-right font-medium">Total:</td>
+                        <td class="px-6 py-4 whitespace-nowrap">
+                            <div class="text-lg font-bold text-green-700">{{ seller_total|currency }}</div>
+                        </td>
+                    </tr>
+                </tfoot>
+            </table>
+        </div>
+    </div>
+
+    <!-- Action Buttons -->
+    {% if payment.status == 'pending' %}
+    <div class="flex justify-end space-x-4">
+        <form method="post" action="{% url 'approve_payment' payment.id %}">
+            {% csrf_token %}
+            <button type="submit" class="bg-green-700 text-white px-6 py-2 rounded-md hover:bg-green-800 transition">
+                Approve Payment
+            </button>
+        </form>
+    </div>
+    {% endif %}
+</div>
+{% endblock %}

@@ -1,0 +1,156 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}AgriMarket - Livestock & Poultry Marketplace{% endblock %}</title>
+
+    <!-- Tailwind CSS via CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+
+    <!-- Custom Tailwind Configuration -->
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        'agri-cream': '#FFF0D1',
+                        'agri-brown': '#795757',
+                        'agri-brown-dark': '#664343',
+                        'agri-brown-darker': '#3B3030',
+                    }
+                }
+            }
+        }
+    </script>
+
+    <!-- Alpine.js via CDN -->
+    <script defer src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js"></script>
+
+    <!-- HTMX via CDN -->
+    <script src="https://unpkg.com/htmx.org@1.9.10"></script>
+
+    {% block extra_head %}{% endblock %}
+</head>
+<body class="bg-agri-cream min-h-screen flex flex-col">
+    <!-- Navigation -->
+    <nav class="bg-agri-brown text-white shadow-md">
+        <div class="container mx-auto px-4 py-3">
+            <div class="flex justify-between items-center">
+                <a href="{% url 'home' %}" class="text-2xl font-bold">AgriMarket</a>
+
+                <div class="flex space-x-4 items-center">
+                    <a href="{% url 'browse_items' %}" class="hover:text-agri-cream">Browse</a>
+
+                    {% if user.is_authenticated %}
+                        {% if user.is_seller %}
+                            <a href="{% url 'seller_dashboard' %}" class="hover:text-agri-cream">Seller Dashboard</a>
+                        {% elif user.is_buyer %}
+                            <a href="{% url 'buyer_dashboard' %}" class="hover:text-agri-cream">Buyer Dashboard</a>
+                            <a href="{% url 'view_cart' %}" class="hover:text-agri-cream relative">
+                                <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 3h2l.4 2M7 13h10l4-8H5.4M7 13L5.4 5M7 13l-2.293 2.293c-.63.63-.184 1.707.707 1.707H17m0 0a2 2 0 100 4 2 2 0 000-4zm-8 2a2 2 0 11-4 0 2 2 0 014 0z" />
+                                </svg>
+                                <span id="cart-count" class="absolute -top-2 -right-2 bg-agri-brown-darker text-white rounded-full text-xs w-5 h-5 flex items-center justify-center" {% if cart_quantity == 0 %}style="display: none;"{% endif %}>
+                                    {{ cart_quantity }}
+                                </span>
+                            </a>
+                        {% endif %}
+                        <div x-data="{ open: false }" class="relative">
+                            <button @click="open = !open" class="flex items-center hover:text-agri-cream">
+                                {{ user.username }}
+                                <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 ml-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
+                                </svg>
+                            </button>
+                            <div x-show="open" @click.away="open = false" class="absolute right-0 mt-2 w-48 bg-white rounded-md shadow-lg py-1 z-10">
+                                <form method="post" action="{% url 'logout' %}">
+                                    {% csrf_token %}
+                                    <button type="submit" class="block w-full text-left px-4 py-2 text-agri-brown-darker hover:bg-agri-cream">Logout</button>
+                                </form>
+                                <!-- Fallback for GET method -->
+                                <a href="{% url 'logout' %}" class="block px-4 py-2 text-agri-brown-darker hover:bg-agri-cream">Logout (Alternative)</a>
+                            </div>
+                        </div>
+                    {% else %}
+                        <a href="{% url 'login' %}" class="hover:text-agri-cream">Login</a>
+                        <a href="{% url 'register' %}" class="bg-white text-agri-brown px-4 py-2 rounded-md hover:bg-agri-cream">Register</a>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Messages -->
+    {% if messages %}
+    <div class="container mx-auto px-4 mt-4">
+        {% for message in messages %}
+            <div class="p-4 mb-4 rounded-md {% if message.tags == 'success' %}bg-agri-cream text-agri-brown-dark{% elif message.tags == 'error' %}bg-red-100 text-red-700{% else %}bg-agri-cream text-agri-brown-dark{% endif %}"
+                 x-data="{ show: true }" x-show="show" x-init="setTimeout(() => show = false, 5000)">
+                <div class="flex justify-between items-center">
+                    <p>{{ message }}</p>
+                    <button @click="show = false" class="text-agri-brown hover:text-agri-brown-darker">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+                        </svg>
+                    </button>
+                </div>
+            </div>
+        {% endfor %}
+    </div>
+    {% endif %}
+
+    <!-- Main Content -->
+    <main class="container mx-auto px-4 py-8 flex-grow">
+        {% block content %}{% endblock %}
+    </main>
+
+    <!-- Footer -->
+    <footer class="bg-agri-brown-darker text-white py-6">
+        <div class="container mx-auto px-4">
+            <div class="flex flex-col md:flex-row justify-between items-center">
+                <div class="mb-4 md:mb-0">
+                    <h3 class="text-xl font-bold">AgriMarket</h3>
+                    <p class="text-agri-cream">Connecting farmers and buyers</p>
+                </div>
+                <div class="flex space-x-4">
+                    <a href="#" class="text-agri-cream hover:text-white">About</a>
+                    <a href="#" class="text-agri-cream hover:text-white">Contact</a>
+                    <a href="#" class="text-agri-cream hover:text-white">Terms</a>
+                    <a href="#" class="text-agri-cream hover:text-white">Privacy</a>
+                </div>
+            </div>
+            <div class="mt-4 text-center text-agri-cream">
+                &copy; {% now "Y" %} AgriMarket. All rights reserved.
+            </div>
+        </div>
+    </footer>
+
+    <!-- Cart Update Script for Add to Cart functionality -->
+    <script>
+        document.body.addEventListener('htmx:afterRequest', function(event) {
+            // Check if the response has the cartUpdated trigger
+            if (event.detail.xhr.getResponseHeader('HX-Trigger') === 'cartUpdated') {
+                try {
+                    // Parse the response to get the cart items count
+                    const response = JSON.parse(event.detail.xhr.responseText);
+                    // Update the cart count in the UI
+                    const cartCount = response.cart_items || 0;
+                    document.getElementById('cart-count').textContent = cartCount;
+
+                    // Hide the count if it's zero
+                    if (cartCount === 0) {
+                        document.getElementById('cart-count').style.display = 'none';
+                    } else {
+                        document.getElementById('cart-count').style.display = 'flex';
+                    }
+                } catch (e) {
+                    console.error('Error updating cart count:', e);
+                }
+            }
+        });
+    </script>
+
+    {% block extra_js %}{% endblock %}
+</body>
+</html>
