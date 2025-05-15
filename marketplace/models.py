@@ -6,6 +6,29 @@ from django.utils import timezone
 class User(AbstractUser):
     is_seller = models.BooleanField(default=False)
     is_buyer = models.BooleanField(default=False)
+    is_approved = models.BooleanField(default=False, help_text="Indicates whether the user has been approved by an admin")
+
+    # Profile image
+    profile_image = models.ImageField(upload_to='profile_images/', blank=True, null=True)
+
+    # Contact information
+    phone_number = models.CharField(max_length=15, blank=True, null=True)
+    address = models.CharField(max_length=255, blank=True, null=True)
+    city = models.CharField(max_length=100, blank=True, null=True)
+
+    # Business information (for sellers)
+    business_name = models.CharField(max_length=100, blank=True, null=True)
+    business_id = models.CharField(max_length=50, blank=True, null=True)
+
+    # Terms agreement
+    terms_agreed = models.BooleanField(default=False)
+    terms_agreed_date = models.DateTimeField(blank=True, null=True)
+
+    def save(self, *args, **kwargs):
+        # Set terms agreement date when terms are agreed to
+        if self.terms_agreed and not self.terms_agreed_date:
+            self.terms_agreed_date = timezone.now()
+        super().save(*args, **kwargs)
 
 # Livestock or Poultry Item
 class Item(models.Model):

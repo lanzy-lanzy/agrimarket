@@ -1,0 +1,248 @@
+{% comment %}
+Account Type Component for Registration Form
+{% endcomment %}
+
+<div class="form-section">
+    <h3 class="section-title">Account Type</h3>
+
+    <div class="form-group">
+        <div class="select-container">
+            <select name="user_type" id="account_type" class="custom-select">
+                <option value="" disabled>Select your account type</option>
+                <option value="buyer" selected>Buyer - Purchase livestock and poultry</option>
+                <option value="seller">Seller - List and sell your products</option>
+            </select>
+            <div class="select-icon">
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
+                </svg>
+            </div>
+        </div>
+
+        <div class="account-type-display">
+            <div class="account-type-card" id="buyer-card">
+                <div class="account-type-icon">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-12 w-12" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 3h2l.4 2M7 13h10l4-8H5.4M7 13L5.4 5M7 13l-2.293 2.293c-.63.63-.184 1.707.707 1.707H17m0 0a2 2 0 100 4 2 2 0 000-4zm-8 2a2 2 0 11-4 0 2 2 0 014 0z" />
+                    </svg>
+                </div>
+                <div class="account-type-info">
+                    <h4 class="account-type-title">Buyer Account</h4>
+                    <p class="account-type-description">As a buyer, you can browse and purchase livestock and poultry from verified sellers.</p>
+                </div>
+            </div>
+
+            <div class="account-type-card" id="seller-card" style="display: none;">
+                <div class="account-type-icon">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-12 w-12" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z" />
+                    </svg>
+                </div>
+                <div class="account-type-info">
+                    <h4 class="account-type-title">Seller Account</h4>
+                    <p class="account-type-description">As a seller, you can list your livestock and poultry products for potential buyers.</p>
+                </div>
+            </div>
+        </div>
+
+        {% if form.non_field_errors %}
+        <div class="form-error mt-2">
+            <div class="form-error-icon">
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                </svg>
+            </div>
+            <span>Please select an account type</span>
+        </div>
+        {% endif %}
+    </div>
+</div>
+
+<div class="form-section seller-fields" style="display: none;">
+    <h3 class="section-title">Business Information</h3>
+
+    <div class="form-group">
+        <label for="id_business_name" class="form-label">Business Name</label>
+        <div class="input-wrapper">
+            <input type="text" name="business_name" id="id_business_name" class="form-input" value="{{ form.business_name.value|default:'' }}" placeholder="Enter your business name">
+            <div class="input-icon">
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4" />
+                </svg>
+            </div>
+        </div>
+        {% if form.business_name.errors %}
+        <div class="form-error">
+            <div class="form-error-icon">
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                </svg>
+            </div>
+            <span>{{ form.business_name.errors.0 }}</span>
+        </div>
+        {% endif %}
+    </div>
+
+    <div class="form-group">
+        <label for="id_business_id" class="form-label">Business ID/License Number</label>
+        <div class="input-wrapper">
+            <input type="text" name="business_id" id="id_business_id" class="form-input" value="{{ form.business_id.value|default:'' }}" placeholder="Enter your business license number">
+            <div class="input-icon">
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+                </svg>
+            </div>
+        </div>
+        {% if form.business_id.errors %}
+        <div class="form-error">
+            <div class="form-error-icon">
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                </svg>
+            </div>
+            <span>{{ form.business_id.errors.0 }}</span>
+        </div>
+        {% endif %}
+    </div>
+</div>
+
+<script>
+    // Show/hide seller fields based on account type selection
+    document.addEventListener('DOMContentLoaded', function() {
+        const accountTypeSelect = document.getElementById('account_type');
+        const sellerFields = document.querySelector('.seller-fields');
+        const buyerCard = document.getElementById('buyer-card');
+        const sellerCard = document.getElementById('seller-card');
+
+        function toggleAccountTypeDisplay() {
+            const selectedValue = accountTypeSelect.value;
+
+            if (selectedValue === 'seller') {
+                sellerFields.style.display = 'block';
+                sellerCard.style.display = 'flex';
+                buyerCard.style.display = 'none';
+
+                // Add animation class
+                sellerCard.classList.add('animate-fade-in');
+                setTimeout(() => {
+                    sellerCard.classList.remove('animate-fade-in');
+                }, 500);
+            } else {
+                sellerFields.style.display = 'none';
+                buyerCard.style.display = 'flex';
+                sellerCard.style.display = 'none';
+
+                // Add animation class
+                buyerCard.classList.add('animate-fade-in');
+                setTimeout(() => {
+                    buyerCard.classList.remove('animate-fade-in');
+                }, 500);
+            }
+        }
+
+        // Initial check
+        toggleAccountTypeDisplay();
+
+        // Add event listeners
+        accountTypeSelect.addEventListener('change', toggleAccountTypeDisplay);
+    });
+</script>
+
+<style>
+    /* Custom Select Styling */
+    .select-container {
+        position: relative;
+        margin-bottom: 1.5rem;
+    }
+
+    .custom-select {
+        appearance: none;
+        width: 100%;
+        padding: 0.75rem 1rem;
+        font-size: 1rem;
+        border: 2px solid #E5E7EB;
+        border-radius: 0.5rem;
+        background-color: #F9FAFB;
+        color: #664343;
+        cursor: pointer;
+        transition: all 0.3s ease;
+        padding-right: 2.5rem;
+    }
+
+    .custom-select:focus {
+        outline: none;
+        border-color: #795757;
+        box-shadow: 0 0 0 3px rgba(121, 87, 87, 0.1);
+        background-color: white;
+    }
+
+    .select-icon {
+        position: absolute;
+        right: 1rem;
+        top: 50%;
+        transform: translateY(-50%);
+        color: #795757;
+        pointer-events: none;
+    }
+
+    /* Account Type Card Styling */
+    .account-type-display {
+        margin-top: 1rem;
+        margin-bottom: 1.5rem;
+    }
+
+    .account-type-card {
+        display: flex;
+        align-items: center;
+        padding: 1.5rem;
+        background-color: rgba(121, 87, 87, 0.05);
+        border: 2px solid #795757;
+        border-radius: 0.75rem;
+        transition: all 0.3s ease;
+    }
+
+    .account-type-card:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 8px 16px rgba(121, 87, 87, 0.1);
+    }
+
+    .account-type-icon {
+        color: #795757;
+        margin-right: 1.25rem;
+        flex-shrink: 0;
+    }
+
+    .account-type-info {
+        flex: 1;
+    }
+
+    .account-type-title {
+        font-weight: 700;
+        font-size: 1.1rem;
+        color: #664343;
+        margin-bottom: 0.5rem;
+    }
+
+    .account-type-description {
+        color: #664343;
+        font-size: 0.9rem;
+        line-height: 1.4;
+    }
+
+    .input-wrapper {
+        position: relative;
+    }
+
+    .input-wrapper .input-icon {
+        position: absolute;
+        left: 1rem;
+        top: 50%;
+        transform: translateY(-50%);
+        color: #795757;
+        opacity: 0.7;
+    }
+
+    .input-wrapper .form-input {
+        padding-left: 2.75rem;
+    }
+</style>

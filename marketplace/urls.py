@@ -7,6 +7,7 @@ urlpatterns = [
     # Home and authentication
     path('', views.home, name='home'),
     path('register/', views.register_view, name='register'),
+    path('registration-pending/', views.registration_pending, name='registration_pending'),
     path('login/', views.CustomLoginView.as_view(), name='login'),
     path('logout/', auth_views.LogoutView.as_view(next_page='home', http_method_names=['get', 'post']), name='logout'),
 
@@ -32,11 +33,16 @@ urlpatterns = [
 
     # Custom Admin URLs (using custom-admin prefix to avoid conflicts with Django admin)
     path('custom-admin/dashboard/', admin_views.admin_dashboard, name='admin_dashboard'),
+    path('custom-admin/browse/', admin_views.admin_browse_items, name='admin_browse_items'),
+    path('custom-admin/home/', admin_views.admin_home, name='admin_home'),
     path('custom-admin/users/', admin_views.user_list, name='user_list'),
     path('custom-admin/users/create/', admin_views.user_create, name='user_create'),
     path('custom-admin/users/<int:user_id>/', admin_views.user_detail, name='user_detail'),
     path('custom-admin/users/<int:user_id>/edit/', admin_views.user_edit, name='user_edit'),
     path('custom-admin/users/<int:user_id>/toggle-status/', admin_views.user_toggle_status, name='user_toggle_status'),
+    path('custom-admin/pending-approvals/', admin_views.pending_approvals, name='pending_approvals'),
+    path('custom-admin/users/<int:user_id>/approve/', admin_views.approve_user, name='approve_user'),
+    path('custom-admin/users/<int:user_id>/reject/', admin_views.reject_user, name='reject_user'),
     path('custom-admin/settings/', admin_views.system_settings, name='system_settings'),
     path('custom-admin/settings/general/save/', admin_views.save_general_settings, name='save_general_settings'),
     path('custom-admin/settings/payment/save/', admin_views.save_payment_settings, name='save_payment_settings'),

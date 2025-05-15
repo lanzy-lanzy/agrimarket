@@ -1,0 +1,236 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Register - AgriMarket{% endblock %}
+
+{% block extra_head %}
+{% include 'components/registration/styles.html' %}
+<style>
+    .auth-container {
+        background-color: white;
+        border-radius: 1rem;
+        box-shadow: 0 10px 25px rgba(121, 87, 87, 0.1);
+        overflow: hidden;
+        max-width: 48rem;
+        margin: 2rem auto;
+        position: relative;
+    }
+
+    .auth-header {
+        background: linear-gradient(135deg, #795757 0%, #664343 100%);
+        padding: 2.5rem 2rem 2.5rem;
+        position: relative;
+        overflow: hidden;
+    }
+
+    .auth-title {
+        color: white;
+        font-size: 1.75rem;
+        font-weight: 700;
+        margin-bottom: 0.5rem;
+        position: relative;
+        z-index: 1;
+        text-align: center;
+    }
+
+    .auth-subtitle {
+        color: rgba(255, 255, 255, 0.8);
+        font-size: 1rem;
+        position: relative;
+        z-index: 1;
+        text-align: center;
+    }
+
+    .auth-form {
+        padding: 2rem;
+    }
+
+    .form-group {
+        margin-bottom: 1.5rem;
+        position: relative;
+    }
+
+    .form-label {
+        display: block;
+        margin-bottom: 0.5rem;
+        font-weight: 500;
+        color: #3B3030;
+    }
+
+    .form-input {
+        width: 100%;
+        padding: 0.75rem 1rem 0.75rem 2.5rem;
+        border: 1px solid #E5E7EB;
+        border-radius: 0.5rem;
+        font-size: 1rem;
+        transition: border-color 0.2s, box-shadow 0.2s;
+    }
+
+    .form-input:focus {
+        border-color: #795757;
+        box-shadow: 0 0 0 3px rgba(121, 87, 87, 0.1);
+        outline: none;
+    }
+
+    .input-icon {
+        position: absolute;
+        left: 0.75rem;
+        top: 2.5rem;
+        color: #9CA3AF;
+    }
+
+    .form-hint {
+        margin-top: 0.5rem;
+        font-size: 0.875rem;
+        color: #6B7280;
+    }
+
+    .form-error {
+        display: flex;
+        align-items: center;
+        margin-top: 0.5rem;
+        color: #DC2626;
+        font-size: 0.875rem;
+    }
+
+    .form-error-icon {
+        margin-right: 0.375rem;
+        flex-shrink: 0;
+    }
+
+    .error-container {
+        background-color: #FEF2F2;
+        border-left: 4px solid #DC2626;
+        padding: 1rem;
+        margin-bottom: 1.5rem;
+        border-radius: 0.375rem;
+        color: #B91C1C;
+    }
+
+    .error-list {
+        margin-top: 0.5rem;
+        padding-left: 1.5rem;
+        list-style-type: disc;
+    }
+
+    .submit-button {
+        width: 100%;
+        padding: 0.875rem 1.5rem;
+        background: linear-gradient(135deg, #795757 0%, #664343 100%);
+        color: white;
+        border: none;
+        border-radius: 0.5rem;
+        font-weight: 600;
+        font-size: 1rem;
+        cursor: pointer;
+        transition: transform 0.2s, box-shadow 0.2s;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        margin-top: 2rem;
+    }
+
+    .submit-button:hover {
+        transform: translateY(-1px);
+        box-shadow: 0 4px 6px rgba(121, 87, 87, 0.1);
+    }
+
+    .submit-button:active {
+        transform: translateY(0);
+    }
+
+    .auth-footer {
+        padding: 1.5rem 2rem;
+        background-color: #FFF0D1;
+        text-align: center;
+    }
+
+    .auth-footer-text {
+        color: #3B3030;
+    }
+
+    .auth-link {
+        color: #795757;
+        font-weight: 600;
+        text-decoration: none;
+    }
+
+    .auth-link:hover {
+        text-decoration: underline;
+    }
+
+    @keyframes fadeIn {
+        from { opacity: 0; transform: translateY(10px); }
+        to { opacity: 1; transform: translateY(0); }
+    }
+
+    .animate-fade-in {
+        animation: fadeIn 0.5s ease-out forwards;
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="auth-container animate-fade-in">
+    <div class="auth-header">
+        <h1 class="auth-title">Create Your Account</h1>
+        <p class="auth-subtitle">Join AgriMarket and start trading livestock and poultry</p>
+        <p class="auth-subtitle" style="margin-top: 8px; font-size: 0.85rem;">Note: All registrations require admin approval before activation</p>
+    </div>
+
+    <div class="auth-form">
+        {% if form.errors %}
+        <div class="error-container">
+            <div class="flex items-center">
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
+                </svg>
+                <span class="font-medium">Please correct the following errors:</span>
+            </div>
+            <ul class="error-list">
+                {% for field in form %}
+                    {% for error in field.errors %}
+                        <li>{{ field.label }}: {{ error }}</li>
+                    {% endfor %}
+                {% endfor %}
+                {% for error in form.non_field_errors %}
+                    <li>{{ error }}</li>
+                {% endfor %}
+            </ul>
+        </div>
+        {% endif %}
+
+        <form method="post" enctype="multipart/form-data">
+            {% csrf_token %}
+            
+            <!-- Account Type Selection -->
+            {% include 'components/registration/account_type.html' %}
+            
+            <!-- Profile Image Upload -->
+            {% include 'components/registration/profile_image.html' %}
+            
+            <!-- Personal Information -->
+            {% include 'components/registration/personal_info.html' %}
+            
+            <!-- Contact Information -->
+            {% include 'components/registration/contact_info.html' %}
+            
+            <!-- Password Fields -->
+            {% include 'components/registration/password_fields.html' %}
+            
+            <!-- Terms and Conditions -->
+            {% include 'components/registration/terms.html' %}
+
+            <button type="submit" class="submit-button">
+                <span>Create Account</span>
+            </button>
+        </form>
+    </div>
+
+    <div class="auth-footer">
+        <p class="auth-footer-text">
+            Already have an account? <a href="{% url 'login' %}" class="auth-link">Login here</a>
+        </p>
+    </div>
+</div>
+{% endblock %}

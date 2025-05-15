@@ -1,0 +1,41 @@
+{% comment %}
+Terms and Conditions Component for Registration Form
+{% endcomment %}
+
+<div class="form-section">
+    <h3 class="section-title">Terms and Conditions</h3>
+    
+    <div class="form-group">
+        <div class="terms-container">
+            <div class="terms-content">
+                <p>By creating an account on AgriMarket, you agree to our Terms of Service and Privacy Policy. This includes:</p>
+                <ul class="terms-list">
+                    <li>Providing accurate and truthful information during registration</li>
+                    <li>Maintaining the security of your account credentials</li>
+                    <li>Complying with all applicable laws and regulations</li>
+                    <li>Respecting the rights of other users and third parties</li>
+                    <li>Accepting that all registrations require admin approval before activation</li>
+                </ul>
+                <p>For more information, please read our full <a href="#" class="terms-link">Terms of Service</a> and <a href="#" class="terms-link">Privacy Policy</a>.</p>
+            </div>
+            
+            <div class="terms-checkbox">
+                <input type="checkbox" name="terms_agreement" id="id_terms_agreement" class="terms-input" required {% if form.terms_agreement.value %}checked{% endif %}>
+                <label for="id_terms_agreement" class="terms-label">
+                    I agree to the Terms and Conditions
+                </label>
+            </div>
+            
+            {% if form.terms_agreement.errors %}
+            <div class="form-error">
+                <div class="form-error-icon">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                    </svg>
+                </div>
+                <span>{{ form.terms_agreement.errors.0 }}</span>
+            </div>
+            {% endif %}
+        </div>
+    </div>
+</div>

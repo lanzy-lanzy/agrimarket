@@ -165,6 +165,90 @@
     </div>
 </div>
 
+<!-- Pending Approvals -->
+{% if pending_users %}
+<div class="dashboard-card bg-white rounded-lg shadow-md overflow-hidden mb-8">
+    <div class="p-6 border-b border-agri-cream bg-red-600">
+        <div class="flex justify-between items-center">
+            <h2 class="text-xl font-semibold text-white flex items-center">
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
+                </svg>
+                Pending Approvals
+            </h2>
+            <a href="{% url 'pending_approvals' %}" class="bg-white text-red-600 px-4 py-2 rounded-md hover:bg-red-50 transition-colors flex items-center">
+                <span>View All ({{ pending_approvals_count }})</span>
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 ml-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14 5l7 7m0 0l-7 7m7-7H3" />
+                </svg>
+            </a>
+        </div>
+    </div>
+    <div class="p-6">
+        <div class="overflow-x-auto">
+            <table class="w-full">
+                <thead class="bg-red-50">
+                    <tr>
+                        <th class="px-6 py-3 text-left text-xs font-medium text-red-700 uppercase tracking-wider">Username</th>
+                        <th class="px-6 py-3 text-left text-xs font-medium text-red-700 uppercase tracking-wider">Email</th>
+                        <th class="px-6 py-3 text-left text-xs font-medium text-red-700 uppercase tracking-wider">Role</th>
+                        <th class="px-6 py-3 text-left text-xs font-medium text-red-700 uppercase tracking-wider">Registered</th>
+                        <th class="px-6 py-3 text-left text-xs font-medium text-red-700 uppercase tracking-wider">Actions</th>
+                    </tr>
+                </thead>
+                <tbody class="divide-y divide-red-100">
+                    {% for user in pending_users %}
+                    <tr class="hover:bg-red-50">
+                        <td class="px-6 py-4 whitespace-nowrap">
+                            <div class="flex items-center">
+                                <div class="flex-shrink-0 h-10 w-10 rounded-full bg-red-600 flex items-center justify-center text-white font-bold">
+                                    {{ user.username.0|upper }}
+                                </div>
+                                <div class="ml-4">
+                                    <div class="text-sm font-medium text-gray-900">{{ user.username }}</div>
+                                </div>
+                            </div>
+                        </td>
+                        <td class="px-6 py-4 whitespace-nowrap">
+                            <div class="text-sm text-gray-900">{{ user.email }}</div>
+                        </td>
+                        <td class="px-6 py-4 whitespace-nowrap">
+                            <div class="flex space-x-1">
+                                {% if user.is_seller %}
+                                <span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-green-100 text-green-800">
+                                    Seller
+                                </span>
+                                {% endif %}
+                                {% if user.is_buyer %}
+                                <span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-blue-100 text-blue-800">
+                                    Buyer
+                                </span>
+                                {% endif %}
+                            </div>
+                        </td>
+                        <td class="px-6 py-4 whitespace-nowrap">
+                            <div class="text-sm text-gray-900">{{ user.date_joined|date:"M d, Y" }}</div>
+                            <div class="text-xs text-gray-500">{{ user.date_joined|timesince }} ago</div>
+                        </td>
+                        <td class="px-6 py-4 whitespace-nowrap text-sm font-medium">
+                            <div class="flex space-x-2">
+                                <a href="{% url 'approve_user' user.id %}" class="bg-green-600 text-white px-3 py-1 rounded hover:bg-green-700 transition-colors">
+                                    Approve
+                                </a>
+                                <a href="{% url 'reject_user' user.id %}" class="bg-red-600 text-white px-3 py-1 rounded hover:bg-red-700 transition-colors">
+                                    Reject
+                                </a>
+                            </div>
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+{% endif %}
+
 <!-- System Status -->
 <div class="dashboard-card bg-white rounded-lg shadow-md overflow-hidden mb-8">
     <div class="p-6 border-b border-agri-cream bg-agri-brown">

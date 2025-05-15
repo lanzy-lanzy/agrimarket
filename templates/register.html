@@ -8,11 +8,18 @@
     .auth-container {
         background-color: white;
         border-radius: 1rem;
-        box-shadow: 0 10px 25px rgba(121, 87, 87, 0.1);
+        box-shadow: 0 15px 35px rgba(121, 87, 87, 0.15);
         overflow: hidden;
         max-width: 32rem;
         margin: 2rem auto;
         position: relative;
+        transform: translateY(0);
+        transition: transform 0.3s ease, box-shadow 0.3s ease;
+    }
+
+    .auth-container:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 20px 40px rgba(121, 87, 87, 0.2);
     }
 
     .auth-header {
@@ -20,6 +27,7 @@
         padding: 2.5rem 2rem 2.5rem;
         position: relative;
         overflow: hidden;
+        border-bottom: 5px solid rgba(121, 87, 87, 0.2);
     }
 
     .auth-header::before {
@@ -68,11 +76,12 @@
 
     .form-input {
         width: 100%;
-        padding: 0.75rem 1rem 0.75rem 3rem;
-        border: 1px solid #E5E7EB;
+        padding: 0.85rem 1rem 0.85rem 3rem;
+        border: 2px solid #E5E7EB;
         border-radius: 0.5rem;
         background-color: #F9FAFB;
         transition: all 0.3s ease;
+        font-size: 1rem;
     }
 
     .form-input:focus {
@@ -82,10 +91,20 @@
         background-color: white;
     }
 
+    .form-input::placeholder {
+        color: #A8A8A8;
+        opacity: 0.7;
+    }
+
+    .input-wrapper {
+        position: relative;
+    }
+
     .input-icon {
         position: absolute;
         left: 1rem;
-        top: 2.4rem;
+        top: 50%;
+        transform: translateY(-50%);
         color: #795757;
         opacity: 0.5;
         transition: opacity 0.3s ease;
@@ -118,25 +137,30 @@
 
     .submit-button {
         width: 100%;
-        padding: 0.75rem 1.5rem;
+        padding: 0.85rem 1.5rem;
         background: linear-gradient(135deg, #795757 0%, #664343 100%);
         color: white;
         border: none;
         border-radius: 0.5rem;
         font-weight: 600;
+        font-size: 1.05rem;
         cursor: pointer;
         transition: all 0.3s ease;
         position: relative;
         overflow: hidden;
+        letter-spacing: 0.5px;
+        box-shadow: 0 4px 10px rgba(121, 87, 87, 0.2);
     }
 
     .submit-button:hover {
         transform: translateY(-2px);
-        box-shadow: 0 4px 12px rgba(121, 87, 87, 0.15);
+        box-shadow: 0 6px 15px rgba(121, 87, 87, 0.25);
+        background: linear-gradient(135deg, #8a6565 0%, #795757 100%);
     }
 
     .submit-button:active {
         transform: translateY(0);
+        box-shadow: 0 2px 5px rgba(121, 87, 87, 0.15);
     }
 
     .submit-button::after {
@@ -206,66 +230,84 @@
         line-height: 1.4;
     }
 
-    .account-type-container {
-        display: flex;
-        gap: 1rem;
-        margin-top: 0.5rem;
-    }
-
-    .account-type-option {
-        flex: 1;
+    /* Custom Select Styling */
+    .select-container {
         position: relative;
+        margin-bottom: 1.5rem;
     }
 
-    .account-type-input {
-        position: absolute;
-        opacity: 0;
-        width: 0;
-        height: 0;
-    }
-
-    .account-type-label {
-        display: flex;
-        flex-direction: column;
-        align-items: center;
-        justify-content: center;
-        padding: 1.25rem 1rem;
-        background-color: #F9FAFB;
+    .custom-select {
+        appearance: none;
+        width: 100%;
+        padding: 0.75rem 1rem;
+        font-size: 1rem;
         border: 2px solid #E5E7EB;
         border-radius: 0.5rem;
+        background-color: #F9FAFB;
+        color: #664343;
         cursor: pointer;
+        transition: all 0.3s ease;
+        padding-right: 2.5rem;
+    }
+
+    .custom-select:focus {
+        outline: none;
+        border-color: #795757;
+        box-shadow: 0 0 0 3px rgba(121, 87, 87, 0.1);
+        background-color: white;
+    }
+
+    .select-icon {
+        position: absolute;
+        right: 1rem;
+        top: 50%;
+        transform: translateY(-50%);
+        color: #795757;
+        pointer-events: none;
+    }
+
+    /* Account Type Card Styling */
+    .account-type-display {
+        margin-top: 1rem;
+        margin-bottom: 1.5rem;
+    }
+
+    .account-type-card {
+        display: flex;
+        align-items: center;
+        padding: 1.5rem;
+        background-color: rgba(121, 87, 87, 0.05);
+        border: 2px solid #795757;
+        border-radius: 0.75rem;
         transition: all 0.3s ease;
     }
 
-    .account-type-input:checked + .account-type-label {
-        border-color: #795757;
-        background-color: rgba(121, 87, 87, 0.05);
+    .account-type-card:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 8px 16px rgba(121, 87, 87, 0.1);
     }
 
     .account-type-icon {
-        margin-bottom: 0.75rem;
-        color: #664343;
-        opacity: 0.7;
-        transition: opacity 0.3s ease;
-    }
-
-    .account-type-input:checked + .account-type-label .account-type-icon {
-        opacity: 1;
         color: #795757;
+        margin-right: 1.25rem;
+        flex-shrink: 0;
     }
 
-    .account-type-text {
-        font-weight: 600;
-        font-size: 0.9rem;
+    .account-type-info {
+        flex: 1;
+    }
+
+    .account-type-title {
+        font-weight: 700;
+        font-size: 1.1rem;
         color: #664343;
+        margin-bottom: 0.5rem;
     }
 
     .account-type-description {
-        font-size: 0.8rem;
         color: #664343;
-        opacity: 0.7;
-        text-align: center;
-        margin-top: 0.25rem;
+        font-size: 0.9rem;
+        line-height: 1.4;
     }
 
     @keyframes fadeIn {
@@ -276,6 +318,132 @@
     .animate-fade-in {
         animation: fadeIn 0.5s ease-out forwards;
     }
+
+    /* Loader styles */
+    .loader-container {
+        display: none;
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background-color: rgba(255, 255, 255, 0.8);
+        z-index: 100;
+        justify-content: center;
+        align-items: center;
+        border-radius: 1rem;
+        backdrop-filter: blur(3px);
+    }
+
+    .loader {
+        width: 48px;
+        height: 48px;
+        border: 5px solid #795757;
+        border-bottom-color: transparent;
+        border-radius: 50%;
+        display: inline-block;
+        box-sizing: border-box;
+        animation: rotation 1s linear infinite;
+    }
+
+    .loader-text {
+        position: absolute;
+        margin-top: 70px;
+        color: #795757;
+        font-weight: 600;
+    }
+
+    @keyframes rotation {
+        0% {
+            transform: rotate(0deg);
+        }
+        100% {
+            transform: rotate(360deg);
+        }
+    }
+
+    .submit-button.loading {
+        background: #a08383;
+        pointer-events: none;
+    }
+
+    /* Profile picture upload styles */
+    .profile-upload-container {
+        display: flex;
+        align-items: center;
+        margin-top: 0.5rem;
+        gap: 1.5rem;
+    }
+
+    .profile-preview {
+        width: 100px;
+        height: 100px;
+        border-radius: 50%;
+        background-color: #F9FAFB;
+        border: 2px solid #E5E7EB;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        overflow: hidden;
+        transition: all 0.3s ease;
+        flex-shrink: 0;
+    }
+
+    .profile-preview.has-image {
+        border-color: #795757;
+    }
+
+    .profile-placeholder {
+        width: 50px;
+        height: 50px;
+        color: #795757;
+        opacity: 0.5;
+    }
+
+    #preview-image {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+    }
+
+    .upload-controls {
+        flex: 1;
+    }
+
+    .upload-button {
+        display: inline-flex;
+        align-items: center;
+        padding: 0.5rem 1rem;
+        background-color: rgba(121, 87, 87, 0.1);
+        color: #795757;
+        border: 1px solid #795757;
+        border-radius: 0.5rem;
+        font-weight: 600;
+        font-size: 0.9rem;
+        cursor: pointer;
+        transition: all 0.3s ease;
+    }
+
+    .upload-button:hover {
+        background-color: rgba(121, 87, 87, 0.2);
+        transform: translateY(-1px);
+    }
+
+    .file-input {
+        position: absolute;
+        width: 0.1px;
+        height: 0.1px;
+        opacity: 0;
+        overflow: hidden;
+        z-index: -1;
+    }
+
+    .upload-hint {
+        margin-top: 0.5rem;
+        font-size: 0.8rem;
+        color: #664343;
+        opacity: 0.7;
+    }
 </style>
 {% endblock %}
 
@@ -284,9 +452,16 @@
     <div class="auth-header">
         <h1 class="auth-title">Create Your Account</h1>
         <p class="auth-subtitle">Join AgriMarket and start trading livestock and poultry</p>
+        <p class="auth-subtitle" style="margin-top: 8px; font-size: 0.85rem;">Note: All registrations require admin approval before activation</p>
     </div>
 
-    <div class="auth-form">
+    <div class="auth-form relative">
+        <!-- Loader overlay -->
+        <div class="loader-container" id="register-loader">
+            <span class="loader"></span>
+            <span class="loader-text">Creating your account...</span>
+        </div>
+
         {% if form.errors %}
         <div class="error-container">
             <div class="flex items-center">
@@ -308,16 +483,18 @@
         </div>
         {% endif %}
 
-        <form method="post">
+        <form method="post" id="register-form" enctype="multipart/form-data">
             {% csrf_token %}
 
             <div class="form-group">
                 <label for="id_username" class="form-label">Username</label>
-                <input type="text" name="username" id="id_username" class="form-input" required autocomplete="username">
-                <div class="input-icon">
-                    <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
-                    </svg>
+                <div class="input-wrapper">
+                    <input type="text" name="username" id="id_username" class="form-input" required autocomplete="username" placeholder="Choose a unique username">
+                    <div class="input-icon">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
+                        </svg>
+                    </div>
                 </div>
                 {% if form.username.errors %}
                 <div class="form-error">
@@ -333,11 +510,13 @@
 
             <div class="form-group">
                 <label for="id_password1" class="form-label">Password</label>
-                <input type="password" name="password1" id="id_password1" class="form-input" required autocomplete="new-password">
-                <div class="input-icon">
-                    <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z" />
-                    </svg>
+                <div class="input-wrapper">
+                    <input type="password" name="password1" id="id_password1" class="form-input" required autocomplete="new-password" placeholder="Create a strong password">
+                    <div class="input-icon">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z" />
+                        </svg>
+                    </div>
                 </div>
                 {% if form.password1.errors %}
                 <div class="form-error">
@@ -354,11 +533,13 @@
 
             <div class="form-group">
                 <label for="id_password2" class="form-label">Confirm Password</label>
-                <input type="password" name="password2" id="id_password2" class="form-input" required autocomplete="new-password">
-                <div class="input-icon">
-                    <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z" />
-                    </svg>
+                <div class="input-wrapper">
+                    <input type="password" name="password2" id="id_password2" class="form-input" required autocomplete="new-password" placeholder="Confirm your password">
+                    <div class="input-icon">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z" />
+                        </svg>
+                    </div>
                 </div>
                 {% if form.password2.errors %}
                 <div class="form-error">
@@ -374,39 +555,158 @@
 
             <div class="form-group">
                 <label class="form-label">Account Type</label>
-                <div class="account-type-container">
-                    <div class="account-type-option">
-                        <input type="radio" name="user_type" id="buyer" value="buyer" class="account-type-input" checked>
-                        <label for="buyer" class="account-type-label">
-                            <div class="account-type-icon">
-                                <svg xmlns="http://www.w3.org/2000/svg" class="h-8 w-8" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 3h2l.4 2M7 13h10l4-8H5.4M7 13L5.4 5M7 13l-2.293 2.293c-.63.63-.184 1.707.707 1.707H17m0 0a2 2 0 100 4 2 2 0 000-4zm-8 2a2 2 0 11-4 0 2 2 0 014 0z" />
-                                </svg>
-                            </div>
-                            <span class="account-type-text">Buyer</span>
-                            <span class="account-type-description">Purchase livestock and poultry</span>
-                        </label>
+                <div class="select-container">
+                    <select name="user_type" id="user_type" class="custom-select">
+                        <option value="" disabled>Select your account type</option>
+                        <option value="buyer" selected>Buyer - Purchase livestock and poultry</option>
+                        <option value="seller">Seller - List and sell your products</option>
+                    </select>
+                    <div class="select-icon">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
+                        </svg>
+                    </div>
+                </div>
+
+                <div class="account-type-display">
+                    <div class="account-type-card" id="buyer-card">
+                        <div class="account-type-icon">
+                            <svg xmlns="http://www.w3.org/2000/svg" class="h-12 w-12" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 3h2l.4 2M7 13h10l4-8H5.4M7 13L5.4 5M7 13l-2.293 2.293c-.63.63-.184 1.707.707 1.707H17m0 0a2 2 0 100 4 2 2 0 000-4zm-8 2a2 2 0 11-4 0 2 2 0 014 0z" />
+                            </svg>
+                        </div>
+                        <div class="account-type-info">
+                            <h4 class="account-type-title">Buyer Account</h4>
+                            <p class="account-type-description">As a buyer, you can browse and purchase livestock and poultry from verified sellers.</p>
+                        </div>
                     </div>
 
-                    <div class="account-type-option">
-                        <input type="radio" name="user_type" id="seller" value="seller" class="account-type-input">
-                        <label for="seller" class="account-type-label">
-                            <div class="account-type-icon">
-                                <svg xmlns="http://www.w3.org/2000/svg" class="h-8 w-8" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z" />
-                                </svg>
-                            </div>
-                            <span class="account-type-text">Seller</span>
-                            <span class="account-type-description">List and sell your products</span>
-                        </label>
+                    <div class="account-type-card" id="seller-card" style="display: none;">
+                        <div class="account-type-icon">
+                            <svg xmlns="http://www.w3.org/2000/svg" class="h-12 w-12" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z" />
+                            </svg>
+                        </div>
+                        <div class="account-type-info">
+                            <h4 class="account-type-title">Seller Account</h4>
+                            <p class="account-type-description">As a seller, you can list your livestock and poultry products for potential buyers.</p>
+                        </div>
                     </div>
                 </div>
             </div>
 
-            <button type="submit" class="submit-button">
+            <div class="form-group">
+                <label for="id_profile_picture" class="form-label">Profile Picture</label>
+                <div class="profile-upload-container">
+                    <div class="profile-preview" id="profile-preview">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="profile-placeholder" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
+                        </svg>
+                        <img id="preview-image" src="#" alt="Profile preview" style="display: none;">
+                    </div>
+                    <div class="upload-controls">
+                        <label for="id_profile_picture" class="upload-button">
+                            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" />
+                            </svg>
+                            <span>Choose Image</span>
+                        </label>
+                        <input type="file" name="profile_picture" id="id_profile_picture" accept="image/*" class="file-input">
+                        <p class="upload-hint">Upload a clear photo for verification</p>
+                    </div>
+                </div>
+                {% if form.profile_picture.errors %}
+                <div class="form-error">
+                    <div class="form-error-icon">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                        </svg>
+                    </div>
+                    <span>{{ form.profile_picture.errors.0 }}</span>
+                </div>
+                {% endif %}
+            </div>
+
+            <button type="submit" class="submit-button" id="register-button">
                 <span>Create Account</span>
             </button>
         </form>
+
+        <!-- Script for form submission and loader -->
+        <script>
+            document.addEventListener('DOMContentLoaded', function() {
+                const form = document.getElementById('register-form');
+                const registerButton = document.getElementById('register-button');
+                const loader = document.getElementById('register-loader');
+                const userTypeSelect = document.getElementById('user_type');
+                const buyerCard = document.getElementById('buyer-card');
+                const sellerCard = document.getElementById('seller-card');
+
+                // Handle account type selection
+                function toggleAccountTypeDisplay() {
+                    const selectedValue = userTypeSelect.value;
+
+                    if (selectedValue === 'seller') {
+                        sellerCard.style.display = 'flex';
+                        buyerCard.style.display = 'none';
+
+                        // Add animation class
+                        sellerCard.classList.add('animate-fade-in');
+                        setTimeout(() => {
+                            sellerCard.classList.remove('animate-fade-in');
+                        }, 500);
+                    } else {
+                        buyerCard.style.display = 'flex';
+                        sellerCard.style.display = 'none';
+
+                        // Add animation class
+                        buyerCard.classList.add('animate-fade-in');
+                        setTimeout(() => {
+                            buyerCard.classList.remove('animate-fade-in');
+                        }, 500);
+                    }
+                }
+
+                // Initial check
+                toggleAccountTypeDisplay();
+
+                // Add event listeners
+                userTypeSelect.addEventListener('change', toggleAccountTypeDisplay);
+
+                // Profile picture preview
+                const profilePictureInput = document.getElementById('id_profile_picture');
+                const previewImage = document.getElementById('preview-image');
+                const profilePreview = document.getElementById('profile-preview');
+
+                profilePictureInput.addEventListener('change', function() {
+                    if (this.files && this.files[0]) {
+                        const reader = new FileReader();
+
+                        reader.onload = function(e) {
+                            previewImage.src = e.target.result;
+                            previewImage.style.display = 'block';
+                            profilePreview.classList.add('has-image');
+                        }
+
+                        reader.readAsDataURL(this.files[0]);
+                    }
+                });
+
+                // Form submission
+                form.addEventListener('submit', function(e) {
+                    // Validate form
+                    if (form.checkValidity()) {
+                        // Show loader
+                        loader.style.display = 'flex';
+                        registerButton.classList.add('loading');
+                        registerButton.innerHTML = '<span>Creating account...</span>';
+
+                        // Let the form submit normally
+                        console.log('Registration form submitted');
+                    }
+                });
+            });
+        </script>
     </div>
 
     <div class="auth-footer">

@@ -1,0 +1,121 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Registration Pending - AgriMarket{% endblock %}
+
+{% block extra_head %}
+<style>
+    .pending-container {
+        background-color: white;
+        border-radius: 1rem;
+        box-shadow: 0 10px 25px rgba(121, 87, 87, 0.1);
+        overflow: hidden;
+        max-width: 32rem;
+        margin: 2rem auto;
+        position: relative;
+    }
+
+    .pending-header {
+        background: linear-gradient(135deg, #795757 0%, #664343 100%);
+        padding: 2.5rem 2rem 2.5rem;
+        position: relative;
+        overflow: hidden;
+    }
+
+    .pending-title {
+        color: white;
+        font-size: 1.75rem;
+        font-weight: 700;
+        margin-bottom: 0.5rem;
+        position: relative;
+        z-index: 1;
+    }
+
+    .pending-subtitle {
+        color: rgba(255, 255, 255, 0.8);
+        font-size: 1rem;
+        position: relative;
+        z-index: 1;
+    }
+
+    .pending-content {
+        padding: 2rem;
+    }
+
+    .pending-icon {
+        width: 80px;
+        height: 80px;
+        margin: 0 auto 1.5rem;
+        background-color: #FFF0D1;
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+    }
+
+    .pending-message {
+        text-align: center;
+        color: #3B3030;
+        margin-bottom: 1.5rem;
+    }
+
+    .pending-footer {
+        background-color: #FFF0D1;
+        padding: 1.5rem;
+        text-align: center;
+    }
+
+    .home-button {
+        display: inline-block;
+        background-color: #795757;
+        color: white;
+        font-weight: 600;
+        padding: 0.75rem 1.5rem;
+        border-radius: 0.5rem;
+        text-decoration: none;
+        transition: background-color 0.2s;
+    }
+
+    .home-button:hover {
+        background-color: #664343;
+    }
+
+    @keyframes fadeIn {
+        from { opacity: 0; transform: translateY(10px); }
+        to { opacity: 1; transform: translateY(0); }
+    }
+
+    .animate-fade-in {
+        animation: fadeIn 0.5s ease-out forwards;
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="pending-container animate-fade-in">
+    <div class="pending-header">
+        <h1 class="pending-title">Registration Pending</h1>
+        <p class="pending-subtitle">Your account is awaiting admin approval</p>
+    </div>
+
+    <div class="pending-content">
+        <div class="pending-icon">
+            <svg xmlns="http://www.w3.org/2000/svg" class="h-12 w-12" fill="none" viewBox="0 0 24 24" stroke="#795757">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
+            </svg>
+        </div>
+        
+        <div class="pending-message">
+            <h2 class="text-xl font-semibold mb-2">Thank You for Registering!</h2>
+            <p class="mb-4">Your account has been created successfully and is now pending approval from an administrator.</p>
+            <p>You will receive a notification once your account has been approved, after which you can log in and start using AgriMarket.</p>
+        </div>
+    </div>
+
+    <div class="pending-footer">
+        <a href="{% url 'home' %}" class="home-button">
+            Return to Home
+        </a>
+    </div>
+</div>
+{% endblock %}

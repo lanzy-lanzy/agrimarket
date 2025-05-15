@@ -23,7 +23,7 @@
             </a>
         </div>
     </div>
-    
+
     <!-- Filters -->
     <div class="p-4 bg-agri-cream/20 border-b border-agri-cream">
         <form method="get" class="flex flex-wrap gap-4">
@@ -46,6 +46,7 @@
                     <option value="">All Status</option>
                     <option value="active" {% if request.GET.status == 'active' %}selected{% endif %}>Active</option>
                     <option value="inactive" {% if request.GET.status == 'inactive' %}selected{% endif %}>Inactive</option>
+                    <option value="pending" {% if request.GET.status == 'pending' %}selected{% endif %}>Pending Approval</option>
                 </select>
             </div>
             <div class="flex items-end">
@@ -62,7 +63,7 @@
             </div>
         </form>
     </div>
-    
+
     <!-- User List -->
     <div class="p-6">
         {% if users %}
@@ -141,7 +142,7 @@
                 </tbody>
             </table>
         </div>
-        
+
         <!-- Pagination -->
         {% if is_paginated %}
         <div class="mt-6 flex justify-center">
@@ -160,11 +161,11 @@
                     </svg>
                 </a>
                 {% endif %}
-                
+
                 <span class="px-3 py-2 border border-agri-brown/20 bg-agri-cream text-sm font-medium text-agri-brown-darker">
                     Page {{ page_obj.number }} of {{ page_obj.paginator.num_pages }}
                 </span>
-                
+
                 {% if page_obj.has_next %}
                 <a href="?page={{ page_obj.next_page_number }}{% for key, value in request.GET.items %}{% if key != 'page' %}&{{ key }}={{ value }}{% endif %}{% endfor %}" class="px-3 py-2 border-t border-b border-agri-brown/20 bg-white text-sm font-medium text-agri-brown hover:bg-agri-cream">
                     <span class="sr-only">Next</span>
@@ -182,7 +183,7 @@
             </nav>
         </div>
         {% endif %}
-        
+
         {% else %}
         <div class="text-center py-8">
             <svg xmlns="http://www.w3.org/2000/svg" class="h-16 w-16 mx-auto text-agri-cream mb-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">

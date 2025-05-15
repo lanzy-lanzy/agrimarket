@@ -31,17 +31,23 @@
             </div>
         </div>
     </div>
-    
+
     <div class="p-6">
         <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
             <!-- User Profile Card -->
             <div class="md:col-span-1 bg-agri-cream/20 p-6 rounded-lg flex flex-col items-center">
+                {% if user.profile_image %}
+                <div class="w-32 h-32 rounded-full bg-agri-cream mb-4 overflow-hidden border-4 border-agri-cream">
+                    <img src="{{ user.profile_image.url }}" alt="{{ user.username }}'s profile" class="w-full h-full object-cover">
+                </div>
+                {% else %}
                 <div class="w-32 h-32 rounded-full bg-agri-brown flex items-center justify-center text-white text-5xl font-bold mb-4">
                     {{ user.username.0|upper }}
                 </div>
+                {% endif %}
                 <h3 class="text-xl font-semibold text-agri-brown-darker mb-1">{{ user.username }}</h3>
                 <p class="text-agri-brown mb-4">{{ user.email }}</p>
-                
+
                 <div class="flex flex-wrap justify-center gap-2 mb-4">
                     {% if user.is_superuser %}
                     <span class="px-3 py-1 rounded-full text-xs font-medium bg-purple-100 text-purple-800">
@@ -68,7 +74,7 @@
                     </span>
                     {% endif %}
                 </div>
-                
+
                 <div class="w-full border-t border-agri-brown/20 pt-4 mt-2">
                     <div class="flex justify-between items-center mb-2">
                         <span class="text-sm text-agri-brown-darker">Member Since:</span>
@@ -79,11 +85,22 @@
                         <span class="text-sm font-medium text-agri-brown-darker">{{ user.last_login|date:"M d, Y H:i" }}</span>
                     </div>
                 </div>
-                
+
                 <div class="w-full mt-4 space-y-2">
                     <a href="{% url 'user_edit' user.id %}" class="block w-full text-center bg-agri-brown text-white px-4 py-2 rounded-md hover:bg-agri-brown-dark transition-colors">
                         Edit Profile
                     </a>
+
+                    {% if not user.is_active and not user.is_approved %}
+                    <!-- Pending approval actions -->
+                    <a href="{% url 'approve_user' user.id %}" class="block w-full text-center bg-green-600 text-white px-4 py-2 rounded-md hover:bg-green-700 transition-colors" onclick="return confirm('Are you sure you want to approve this user?')">
+                        Approve Registration
+                    </a>
+                    <a href="{% url 'reject_user' user.id %}" class="block w-full text-center bg-red-600 text-white px-4 py-2 rounded-md hover:bg-red-700 transition-colors" onclick="return confirm('Are you sure you want to reject this user?')">
+                        Reject Registration
+                    </a>
+                    {% else %}
+                    <!-- Regular active/inactive toggle -->
                     {% if user.is_active %}
                     <a href="{% url 'user_toggle_status' user.id %}" class="block w-full text-center bg-red-600 text-white px-4 py-2 rounded-md hover:bg-red-700 transition-colors" onclick="return confirm('Are you sure you want to deactivate this user?')">
                         Deactivate User
@@ -93,9 +110,10 @@
                         Activate User
                     </a>
                     {% endif %}
+                    {% endif %}
                 </div>
             </div>
-            
+
             <!-- User Details -->
             <div class="md:col-span-2 space-y-6">
                 <!-- Basic Information -->
@@ -125,7 +143,37 @@
                         </div>
                     </div>
                 </div>
-                
+
+                <!-- Contact Information -->
+                <div class="bg-white p-6 rounded-lg shadow-sm border border-agri-cream">
+                    <h3 class="text-lg font-semibold text-agri-brown-darker mb-4 flex items-center">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 5a2 2 0 012-2h3.28a1 1 0 01.948.684l1.498 4.493a1 1 0 01-.502 1.21l-2.257 1.13a11.042 11.042 0 005.516 5.516l1.13-2.257a1 1 0 011.21-.502l4.493 1.498a1 1 0 01.684.949V19a2 2 0 01-2 2h-1C9.716 21 3 14.284 3 6V5z" />
+                        </svg>
+                        Contact Information
+                    </h3>
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        <div>
+                            <p class="text-sm text-agri-brown">Phone Number</p>
+                            <p class="font-medium text-agri-brown-darker">{{ user.phone_number|default:"Not provided" }}</p>
+                        </div>
+                        <div>
+                            <p class="text-sm text-agri-brown">Address</p>
+                            <p class="font-medium text-agri-brown-darker">{{ user.address|default:"Not provided" }}</p>
+                        </div>
+                        {% if user.is_seller %}
+                        <div>
+                            <p class="text-sm text-agri-brown">Business Name</p>
+                            <p class="font-medium text-agri-brown-darker">{{ user.business_name|default:"Not provided" }}</p>
+                        </div>
+                        <div>
+                            <p class="text-sm text-agri-brown">Business ID/License</p>
+                            <p class="font-medium text-agri-brown-darker">{{ user.business_id|default:"Not provided" }}</p>
+                        </div>
+                        {% endif %}
+                    </div>
+                </div>
+
                 <!-- Account Information -->
                 <div class="bg-white p-6 rounded-lg shadow-sm border border-agri-cream">
                     <h3 class="text-lg font-semibold text-agri-brown-darker mb-4 flex items-center">
@@ -141,6 +189,8 @@
                             <p class="font-medium text-agri-brown-darker">
                                 {% if user.is_active %}
                                 <span class="text-green-600">Active</span>
+                                {% elif not user.is_active and not user.is_approved %}
+                                <span class="text-orange-600">Pending Approval</span>
                                 {% else %}
                                 <span class="text-red-600">Inactive</span>
                                 {% endif %}
@@ -170,7 +220,7 @@
                         </div>
                     </div>
                 </div>
-                
+
                 <!-- Activity Summary -->
                 <div class="bg-white p-6 rounded-lg shadow-sm border border-agri-cream">
                     <h3 class="text-lg font-semibold text-agri-brown-darker mb-4 flex items-center">
@@ -194,7 +244,7 @@
                             <p class="text-2xl font-bold text-agri-brown-darker">₱{{ seller_revenue|floatformat:2 }}</p>
                         </div>
                         {% endif %}
-                        
+
                         {% if user.is_buyer %}
                         <div class="bg-agri-cream/20 p-4 rounded-lg">
                             <p class="text-sm text-agri-brown mb-1">Orders Placed</p>
@@ -209,7 +259,7 @@
                             <p class="text-2xl font-bold text-agri-brown-darker">{{ buyer_cart_items }}</p>
                         </div>
                         {% endif %}
-                        
+
                         {% if not user.is_seller and not user.is_buyer %}
                         <div class="col-span-3 text-center py-4">
                             <p class="text-agri-brown">No activity data available for this user.</p>

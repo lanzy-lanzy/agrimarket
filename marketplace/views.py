@@ -31,26 +31,46 @@ def home(request):
 # Authentication views
 def register_view(request):
     if request.method == 'POST':
-        form = CustomUserCreationForm(request.POST)
+        form = CustomUserCreationForm(request.POST, request.FILES)
         if form.is_valid():
             user = form.save(commit=False)
-            user_type = request.POST.get('user_type')
-            if user_type == 'seller':
-                user.is_seller = True
-            else:
-                user.is_buyer = True
+
+            # Handle profile image
+            if 'profile_image' in request.FILES:
+                user.profile_image = request.FILES['profile_image']
+
+            # Set contact information
+            user.phone_number = form.cleaned_data.get('phone_number')
+            user.address = form.cleaned_data.get('address')
+
+            # Set business information for sellers
+            if form.cleaned_data.get('user_type') == 'seller':
+                user.business_name = form.cleaned_data.get('business_name')
+                user.business_id = form.cleaned_data.get('business_id')
+
+            # Set terms agreement
+            user.terms_agreed = form.cleaned_data.get('terms_agreement', False)
+            if user.terms_agreed:
+                user.terms_agreed_date = timezone.now()
+
+            # Set user as inactive until approved by admin
+            user.is_active = False
             user.save()
-            login(request, user)
-            # Redirect to appropriate dashboard based on user type
-            if user.is_seller:
-                return redirect('seller_dashboard')
-            elif user.is_buyer:
-                return redirect('buyer_dashboard')
-            else:
-                return redirect('home')
+
+            # Don't log in the user, show a pending approval message instead
+            messages.success(
+                request,
+                "Your registration has been submitted successfully! An administrator will review your account. "
+                "You will be able to log in once your account is approved."
+            )
+            return redirect('registration_pending')
     else:
         form = CustomUserCreationForm()
-    return render(request, 'register.html', {'form': form})
+    return render(request, 'register_new.html', {'form': form})
+
+def registration_pending(request):
+    """View for the registration pending page"""
+    return render(request, 'registration_pending.html')
 
 class CustomLoginView(LoginView):
     template_name = 'login.html'
@@ -66,6 +86,17 @@ class CustomLoginView(LoginView):
             return '/buyer/dashboard/'
         else:
             return '/'
+
+    def form_valid(self, form):
+        """Check if the user is approved before allowing login"""
+        user = form.get_user()
+        if not user.is_active:
+            messages.error(
+                self.request,
+                "Your account is pending approval from an administrator. Please check back later."
+            )
+            return redirect('login')
+        return super().form_valid(form)
 
 # Seller views
 @login_required
@@ -486,7 +517,7 @@ def buyer_dashboard(request):
         'cart': cart,
         'payments': payments
     })
-
+@login_required
 def browse_items(request):
     category = request.GET.get('category', '')
     if category:

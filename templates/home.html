@@ -20,6 +20,28 @@
         display: block;
     }
 
+    /* 3D Search Scene Styling */
+    #search-scene-container {
+        position: relative;
+        width: 100%;
+        overflow: hidden;
+        border-radius: 1rem;
+        box-shadow: 0 10px 25px rgba(121, 87, 87, 0.15);
+        background: linear-gradient(135deg, #FFF0D1 0%, #795757 100%);
+        transition: all 0.3s ease;
+    }
+
+    #search-scene-container:hover {
+        box-shadow: 0 15px 35px rgba(121, 87, 87, 0.25);
+        transform: translateY(-5px);
+    }
+
+    #search-scene {
+        width: 100%;
+        height: 100%;
+        display: block;
+    }
+
     .scene-overlay {
         position: absolute;
         top: 0;
@@ -252,11 +274,55 @@
     {% if items %}
     <section class="py-12 bg-agri-cream/30 rounded-3xl my-12">
         <div class="container mx-auto px-4">
-            <h2 class="section-title text-3xl font-bold text-agri-brown-darker text-center mb-12">Featured Items</h2>
+            <h2 class="section-title text-3xl font-bold text-agri-brown-darker text-center mb-8">Featured Items</h2>
 
-            <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-8">
+            <!-- 3D Search Component -->
+            <div class="mb-12 relative">
+                <div id="search-scene-container" class="h-32 md:h-40 rounded-2xl overflow-hidden shadow-lg">
+                    <canvas id="search-scene" class="w-full h-full"></canvas>
+                    <div class="absolute inset-0 flex items-center justify-center">
+                        <div class="w-full max-w-2xl px-4">
+                            <div class="relative" x-data="{ searchFocused: false, searchText: '' }">
+                                <input
+                                    type="text"
+                                    id="featured-search"
+                                    placeholder="Search for livestock or poultry..."
+                                    class="w-full py-4 px-6 pr-12 rounded-full border-2 border-agri-brown/30 focus:border-agri-brown focus:ring focus:ring-agri-brown/20 text-agri-brown-darker placeholder-agri-brown/50 shadow-lg transition-all duration-300"
+                                    x-bind:class="searchFocused ? 'shadow-xl scale-105' : ''"
+                                    @focus="searchFocused = true"
+                                    @blur="searchFocused = false"
+                                    x-model="searchText"
+                                >
+                                <div class="absolute right-4 top-1/2 transform -translate-y-1/2 flex items-center space-x-2">
+                                    <button
+                                        x-show="searchText.length > 0"
+                                        @click="searchText = ''; document.getElementById('featured-search').value = ''; document.getElementById('featured-search').dispatchEvent(new Event('input'));"
+                                        class="text-agri-brown hover:text-agri-brown-dark transition-colors"
+                                        title="Clear search"
+                                    >
+                                        <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+                                        </svg>
+                                    </button>
+                                    <div class="text-agri-brown">
+                                        <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+                                        </svg>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div id="featured-items-container" class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-8">
                 {% for item in items %}
-                <div class="group bg-white rounded-xl shadow-lg overflow-hidden hover:shadow-2xl transition-all duration-500 transform hover:-translate-y-2">
+                <div class="group bg-white rounded-xl shadow-lg overflow-hidden hover:shadow-2xl transition-all duration-500 transform hover:-translate-y-2 featured-item"
+                     data-name="{{ item.name|lower }}"
+                     data-category="{{ item.category|lower }}"
+                     data-description="{{ item.description|lower }}"
+                     data-seller="{{ item.seller.username|lower }}">
                     <div class="relative">
                         {% if item.image %}
                         <div class="overflow-hidden h-56">
@@ -301,6 +367,12 @@
                     </div>
                 </div>
                 {% endfor %}
+            </div>
+
+            <!-- No results message -->
+            <div id="no-results-message" class="hidden text-center py-8">
+                <div class="text-agri-brown-darker text-xl">No items match your search</div>
+                <p class="text-agri-brown mt-2">Try different keywords or browse all items</p>
             </div>
 
             <div class="mt-12 text-center">
@@ -393,5 +465,37 @@
 
 {% block extra_js %}
 <script src="{% static 'js/agrimarket3d.js' %}"></script>
+<script src="{% static 'js/search3d.js' %}"></script>
+
+<style>
+    /* Search animation styles */
+    @keyframes searchMatch {
+        0% { transform: translateY(0); }
+        50% { transform: translateY(-10px); box-shadow: 0 15px 30px rgba(121, 87, 87, 0.2); }
+        100% { transform: translateY(0); }
+    }
+
+    .search-match {
+        animation: searchMatch 1s ease-in-out;
+    }
+
+    /* Smooth transitions for search filtering */
+    .featured-item {
+        transition: opacity 0.3s ease, transform 0.5s ease;
+    }
+
+    .featured-item.hidden {
+        opacity: 0;
+        transform: scale(0.8);
+        height: 0;
+        margin: 0;
+        padding: 0;
+        overflow: hidden;
+    }
+
+    #no-results-message {
+        transition: opacity 0.3s ease;
+    }
+</style>
 {% endblock %}
 {% endblock %}

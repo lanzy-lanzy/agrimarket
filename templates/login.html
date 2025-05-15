@@ -197,6 +197,54 @@
     .animate-fade-in {
         animation: fadeIn 0.5s ease-out forwards;
     }
+
+    /* Loader styles */
+    .loader-container {
+        display: none;
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background-color: rgba(255, 255, 255, 0.8);
+        z-index: 100;
+        justify-content: center;
+        align-items: center;
+        border-radius: 1rem;
+        backdrop-filter: blur(3px);
+    }
+
+    .loader {
+        width: 48px;
+        height: 48px;
+        border: 5px solid #795757;
+        border-bottom-color: transparent;
+        border-radius: 50%;
+        display: inline-block;
+        box-sizing: border-box;
+        animation: rotation 1s linear infinite;
+    }
+
+    .loader-text {
+        position: absolute;
+        margin-top: 70px;
+        color: #795757;
+        font-weight: 600;
+    }
+
+    @keyframes rotation {
+        0% {
+            transform: rotate(0deg);
+        }
+        100% {
+            transform: rotate(360deg);
+        }
+    }
+
+    .submit-button.loading {
+        background: #a08383;
+        pointer-events: none;
+    }
 </style>
 {% endblock %}
 
@@ -209,7 +257,13 @@
         <input type="hidden" name="next" value="{{ next|default:'' }}">
     </div>
 
-    <div class="auth-form">
+    <div class="auth-form relative">
+        <!-- Loader overlay -->
+        <div class="loader-container" id="login-loader">
+            <span class="loader"></span>
+            <span class="loader-text">Logging in...</span>
+        </div>
+
         {% if form.errors %}
         <div class="error-container">
             <div class="error-icon">
@@ -223,7 +277,7 @@
         </div>
         {% endif %}
 
-        <form method="post" action="{% url 'login' %}">
+        <form method="post" action="{% url 'login' %}" id="login-form">
             {% csrf_token %}
 
             <div class="form-group">
@@ -251,15 +305,24 @@
             </button>
         </form>
 
-        <!-- Add a small script to ensure proper form submission -->
+        <!-- Script for form submission and loader -->
         <script>
             document.addEventListener('DOMContentLoaded', function() {
-                // No need to add a click handler as the button is already a submit button
-                // Just add a form submit handler to log the submission for debugging
-                const form = document.querySelector('form');
+                const form = document.getElementById('login-form');
+                const loginButton = document.getElementById('login-button');
+                const loader = document.getElementById('login-loader');
+
                 form.addEventListener('submit', function(e) {
-                    console.log('Form submitted');
-                    // Don't prevent default - let the form submit normally
+                    // Validate form
+                    if (form.checkValidity()) {
+                        // Show loader
+                        loader.style.display = 'flex';
+                        loginButton.classList.add('loading');
+                        loginButton.innerHTML = '<span>Logging in...</span>';
+
+                        // Let the form submit normally
+                        console.log('Login form submitted');
+                    }
                 });
             });
         </script>

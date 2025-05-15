@@ -119,8 +119,12 @@
 
         <!-- Buyer Profile -->
         <div class="flex flex-col items-center p-6 border-b border-agri-brown/30 bg-gradient-to-b from-agri-brown to-agri-brown-dark">
-            <div class="relative w-20 h-20 rounded-full bg-white/10 backdrop-blur-sm flex items-center justify-center text-white text-2xl font-bold mb-3 shadow-lg border-2 border-white/20">
-                {{ user.username.0|upper }}
+            <div class="relative w-20 h-20 rounded-full bg-white/10 backdrop-blur-sm flex items-center justify-center text-white text-2xl font-bold mb-3 shadow-lg border-2 border-white/20 overflow-hidden">
+                {% if user.profile_image %}
+                    <img src="{{ user.profile_image.url }}" alt="{{ user.username }}" class="w-full h-full object-cover">
+                {% else %}
+                    {{ user.username.0|upper }}
+                {% endif %}
             </div>
             <div x-show="sidebarOpen" class="text-center">
                 <h3 class="font-semibold text-white text-lg">{{ user.username }}</h3>
@@ -220,12 +224,16 @@
                     <div class="text-xs text-agri-brown" id="current-time"></div>
                 </div>
 
-                
+
                 <!-- User Profile -->
                 <div x-data="{ open: false }" class="relative">
                     <button @click="open = !open" class="flex items-center space-x-2 p-2 rounded-full hover:bg-agri-cream text-agri-brown-darker hover:text-agri-brown transition-colors">
-                        <div class="w-8 h-8 rounded-full bg-agri-brown flex items-center justify-center text-white font-bold">
-                            {{ user.username.0|upper }}
+                        <div class="w-8 h-8 rounded-full bg-agri-brown flex items-center justify-center text-white font-bold overflow-hidden">
+                            {% if user.profile_image %}
+                                <img src="{{ user.profile_image.url }}" alt="{{ user.username }}" class="w-full h-full object-cover">
+                            {% else %}
+                                {{ user.username.0|upper }}
+                            {% endif %}
                         </div>
                     </button>
                     <div x-show="open" @click.away="open = false" class="absolute right-0 mt-2 w-48 bg-white rounded-lg shadow-xl py-1 z-10 border border-gray-200">

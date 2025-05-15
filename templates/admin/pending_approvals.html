@@ -1,0 +1,165 @@
+{% extends 'admin/admin_base.html' %}
+
+{% block title %}Pending Approvals - Admin Dashboard{% endblock %}
+
+{% block dashboard_content %}
+<div class="bg-white rounded-lg shadow-md overflow-hidden mb-8">
+    <div class="p-6 border-b border-agri-cream bg-agri-brown">
+        <div class="flex justify-between items-center">
+            <h2 class="text-xl font-semibold text-white flex items-center">
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
+                </svg>
+                Pending Approvals
+            </h2>
+            <div class="text-white bg-agri-brown-dark px-3 py-1 rounded-full text-sm">
+                {{ pending_count }} pending
+            </div>
+        </div>
+    </div>
+
+    <div class="overflow-x-auto">
+        {% if users %}
+        <table class="min-w-full divide-y divide-agri-cream">
+            <thead class="bg-agri-cream/30">
+                <tr>
+                    <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-agri-brown-darker uppercase tracking-wider">
+                        User
+                    </th>
+                    <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-agri-brown-darker uppercase tracking-wider">
+                        Role
+                    </th>
+                    <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-agri-brown-darker uppercase tracking-wider">
+                        Contact Info
+                    </th>
+                    <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-agri-brown-darker uppercase tracking-wider">
+                        Registered
+                    </th>
+                    <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-agri-brown-darker uppercase tracking-wider">
+                        Actions
+                    </th>
+                </tr>
+            </thead>
+            <tbody class="bg-white divide-y divide-agri-cream/30">
+                {% for user in users %}
+                <tr>
+                    <td class="px-6 py-4 whitespace-nowrap">
+                        <div class="flex items-center">
+                            {% if user.profile_image %}
+                            <div class="flex-shrink-0 h-10 w-10 rounded-full bg-agri-cream overflow-hidden border-2 border-agri-cream">
+                                <img src="{{ user.profile_image.url }}" alt="{{ user.username }}'s profile" class="w-full h-full object-cover">
+                            </div>
+                            {% else %}
+                            <div class="flex-shrink-0 h-10 w-10 rounded-full bg-agri-brown flex items-center justify-center text-white font-bold">
+                                {{ user.username.0|upper }}
+                            </div>
+                            {% endif %}
+                            <div class="ml-4">
+                                <div class="text-sm font-medium text-agri-brown-darker">{{ user.username }}</div>
+                                <div class="text-sm text-agri-brown">{{ user.email }}</div>
+                            </div>
+                        </div>
+                    </td>
+                    <td class="px-6 py-4 whitespace-nowrap">
+                        <div class="text-sm text-agri-brown-darker">
+                            {% if user.is_seller and user.is_buyer %}
+                            Seller & Buyer
+                            {% elif user.is_seller %}
+                            Seller
+                            {% elif user.is_buyer %}
+                            Buyer
+                            {% else %}
+                            User
+                            {% endif %}
+                        </div>
+                    </td>
+                    <td class="px-6 py-4 whitespace-nowrap">
+                        <div class="text-sm text-agri-brown-darker">
+                            {% if user.phone_number %}
+                            <div class="flex items-center mb-1">
+                                <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 mr-1 text-agri-brown" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 5a2 2 0 012-2h3.28a1 1 0 01.948.684l1.498 4.493a1 1 0 01-.502 1.21l-2.257 1.13a11.042 11.042 0 005.516 5.516l1.13-2.257a1 1 0 011.21-.502l4.493 1.498a1 1 0 01.684.949V19a2 2 0 01-2 2h-1C9.716 21 3 14.284 3 6V5z" />
+                                </svg>
+                                {{ user.phone_number }}
+                            </div>
+                            {% endif %}
+                            {% if user.is_seller and user.business_name %}
+                            <div class="flex items-center">
+                                <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 mr-1 text-agri-brown" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 13.255A23.931 23.931 0 0112 15c-3.183 0-6.22-.62-9-1.745M16 6V4a2 2 0 00-2-2h-4a2 2 0 00-2 2v2m4 6h.01M5 20h14a2 2 0 002-2V8a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />
+                                </svg>
+                                {{ user.business_name }}
+                            </div>
+                            {% endif %}
+                        </div>
+                    </td>
+                    <td class="px-6 py-4 whitespace-nowrap">
+                        <div class="text-sm text-agri-brown-darker">{{ user.date_joined|date:"M d, Y" }}</div>
+                        <div class="text-xs text-agri-brown">{{ user.date_joined|timesince }} ago</div>
+                    </td>
+                    <td class="px-6 py-4 whitespace-nowrap text-sm font-medium">
+                        <div class="flex space-x-2">
+                            <a href="{% url 'approve_user' user.id %}" class="bg-green-600 text-white px-3 py-1 rounded hover:bg-green-700 transition-colors">
+                                Approve
+                            </a>
+                            <a href="{% url 'reject_user' user.id %}" class="bg-red-600 text-white px-3 py-1 rounded hover:bg-red-700 transition-colors">
+                                Reject
+                            </a>
+                            <a href="{% url 'user_detail' user.id %}" class="bg-agri-brown text-white px-3 py-1 rounded hover:bg-agri-brown-dark transition-colors">
+                                View
+                            </a>
+                        </div>
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+        {% else %}
+        <div class="p-8 text-center">
+            <div class="inline-flex items-center justify-center w-16 h-16 rounded-full bg-agri-cream mb-4">
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-8 w-8 text-agri-brown" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" />
+                </svg>
+            </div>
+            <h3 class="text-lg font-medium text-agri-brown-darker mb-1">No Pending Approvals</h3>
+            <p class="text-agri-brown">All user registrations have been processed.</p>
+        </div>
+        {% endif %}
+    </div>
+
+    {% if is_paginated %}
+    <div class="px-6 py-4 border-t border-agri-cream bg-white">
+        <div class="flex justify-between items-center">
+            <div>
+                <p class="text-sm text-agri-brown">
+                    Showing {{ page_obj.start_index }} to {{ page_obj.end_index }} of {{ page_obj.paginator.count }} entries
+                </p>
+            </div>
+            <div class="flex space-x-1">
+                {% if page_obj.has_previous %}
+                <a href="?page=1" class="px-3 py-1 rounded border border-agri-cream text-agri-brown hover:bg-agri-cream/20 transition-colors">
+                    First
+                </a>
+                <a href="?page={{ page_obj.previous_page_number }}" class="px-3 py-1 rounded border border-agri-cream text-agri-brown hover:bg-agri-cream/20 transition-colors">
+                    Previous
+                </a>
+                {% endif %}
+
+                <span class="px-3 py-1 rounded border border-agri-brown bg-agri-brown text-white">
+                    {{ page_obj.number }}
+                </span>
+
+                {% if page_obj.has_next %}
+                <a href="?page={{ page_obj.next_page_number }}" class="px-3 py-1 rounded border border-agri-cream text-agri-brown hover:bg-agri-cream/20 transition-colors">
+                    Next
+                </a>
+                <a href="?page={{ page_obj.paginator.num_pages }}" class="px-3 py-1 rounded border border-agri-cream text-agri-brown hover:bg-agri-cream/20 transition-colors">
+                    Last
+                </a>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+    {% endif %}
+</div>
+{% endblock %}

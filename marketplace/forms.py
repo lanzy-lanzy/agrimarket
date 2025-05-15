@@ -5,22 +5,85 @@ from django.utils import timezone
 from datetime import timedelta
 
 class CustomUserCreationForm(UserCreationForm):
-    is_seller = forms.BooleanField(required=False, label='Register as a Seller')
-    is_buyer = forms.BooleanField(required=False, label='Register as a Buyer')
+    USER_TYPE_CHOICES = [
+        ('', 'Select account type'),
+        ('buyer', 'Buyer'),
+        ('seller', 'Seller'),
+    ]
+
+    user_type = forms.ChoiceField(
+        choices=USER_TYPE_CHOICES,
+        required=True,
+        label='Account Type',
+        widget=forms.Select(attrs={'class': 'custom-select'})
+    )
+
+    # Profile image
+    profile_image = forms.ImageField(
+        required=False,
+        label='Profile Image',
+        help_text='Upload a profile picture (optional)'
+    )
+
+    # Personal information
+    first_name = forms.CharField(max_length=30, required=True, label='First Name')
+    last_name = forms.CharField(max_length=30, required=True, label='Last Name')
+    email = forms.EmailField(max_length=254, required=True, label='Email Address')
+
+    # Contact information
+    phone_number = forms.CharField(max_length=15, required=True, label='Phone Number')
+    address = forms.CharField(max_length=255, required=True, label='Address')
+
+    # Terms and conditions
+    terms_agreement = forms.BooleanField(
+        required=True,
+        label='I agree to the Terms and Conditions',
+        error_messages={'required': 'You must agree to the terms and conditions to register'}
+    )
+
+    # For sellers - additional verification
+    business_name = forms.CharField(max_length=100, required=False, label='Business Name (for sellers)')
+    business_id = forms.CharField(max_length=50, required=False, label='Business ID/License Number (for sellers)')
 
     class Meta:
         model = User
-        fields = ('username', 'email', 'password1', 'password2', 'is_seller', 'is_buyer')
+        fields = ('username', 'email', 'profile_image', 'first_name', 'last_name', 'phone_number', 'address',
+                 'password1', 'password2', 'user_type', 'business_name', 'business_id', 'terms_agreement')
 
     def clean(self):
         cleaned_data = super().clean()
-        is_seller = cleaned_data.get('is_seller')
-        is_buyer = cleaned_data.get('is_buyer')
+        user_type = cleaned_data.get('user_type')
+        business_name = cleaned_data.get('business_name')
+        business_id = cleaned_data.get('business_id')
 
-        if not is_seller and not is_buyer:
-            raise forms.ValidationError('You must select at least one role: Seller or Buyer')
+        if not user_type:
+            raise forms.ValidationError('Please select an account type')
+
+        # If registering as a seller, business information is required
+        if user_type == 'seller':
+            if not business_name:
+                self.add_error('business_name', 'Business name is required for sellers')
+            if not business_id:
+                self.add_error('business_id', 'Business ID/License number is required for sellers')
 
         return cleaned_data
+
+    def save(self, commit=True):
+        user = super().save(commit=False)
+        user_type = self.cleaned_data.get('user_type')
+
+        # Set is_seller and is_buyer based on user_type selection
+        if user_type == 'seller':
+            user.is_seller = True
+            user.is_buyer = False
+        elif user_type == 'buyer':
+            user.is_buyer = True
+            user.is_seller = False
+
+        if commit:
+            user.save()
+
+        return user
 
 class ItemForm(forms.ModelForm):
     class Meta:
