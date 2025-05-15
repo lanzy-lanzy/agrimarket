@@ -48,4 +48,10 @@ urlpatterns = [
     path('custom-admin/settings/payment/save/', admin_views.save_payment_settings, name='save_payment_settings'),
     path('custom-admin/settings/cache/clear/', admin_views.clear_cache, name='clear_cache'),
     path('custom-admin/settings/database/backup/', admin_views.backup_database, name='backup_database'),
+
+    # Admin Transaction Monitoring URLs
+    path('custom-admin/transactions/', admin_views.admin_transactions, name='admin_transactions'),
+    path('custom-admin/transactions/<int:payment_id>/', admin_views.admin_transaction_detail, name='admin_transaction_detail'),
+    path('custom-admin/transactions/<int:payment_id>/approve/', admin_views.admin_approve_transaction, name='admin_approve_transaction'),
+    path('custom-admin/transactions/<int:payment_id>/reject/', admin_views.admin_reject_transaction, name='admin_reject_transaction'),
 ]
